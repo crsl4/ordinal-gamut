@@ -1,0 +1,49 @@
+cd by_gene
+
+mkdir YWHAZ
+cd YWHAZ
+plink --bfile ../../filtered --set ../../good_genes.set --gene YWHAZ --recode A --out setdat
+
+cd ..
+
+mkdir GRHL2
+cd GRHL2
+plink --bfile ../../filtered --set ../../good_genes.set --gene GRHL2 --recode A --out setdat
+
+cd ..
+
+mkdir NCALD
+cd NCALD
+plink --bfile ../../filtered --set ../../good_genes.set --gene NCALD --recode A --out setdat
+
+cd ..
+
+mkdir UBR5
+cd UBR5
+plink --bfile ../../filtered --set ../../good_genes.set --gene UBR5 --recode A --out setdat
+
+cd ..
+
+mkdir ODF1
+cd ODF1
+plink --bfile ../../filtered --set ../../good_genes.set --gene ODF1 --recode A --out setdat
+
+cd ..
+
+mkdir FZD6
+cd FZD6
+plink --bfile ../../filtered --set ../../good_genes.set --gene FZD6 --recode A --out setdat
+
+cd ..
+
+mkdir RIMS2
+cd RIMS2
+plink --bfile ../../filtered --set ../../good_genes.set --gene RIMS2 --recode A --out setdat
+
+cd ..
+
+mkdir DPYS
+cd DPYS
+plink --bfile ../../filtered --set ../../good_genes.set --gene DPYS --recode A --out setdat
+
+

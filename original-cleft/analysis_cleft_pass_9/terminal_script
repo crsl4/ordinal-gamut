@@ -1,0 +1,8 @@
+cd /Volumes/JFK_Passport/ordinal_family_history/analysis_cleft_pass_9
+
+mkdir first_call
+cd first_call
+
+../plink --bfile ../../data_cleft/CIDR_Marazita_OFC_TOP_subject_level_filtered --keep ../ids_to_keep.txt --geno 0.05 --maf 0.001 --max-maf 0.05 --chr 0,1-22 --pheno ../phenos_of_kept.txt --missing --freq --make-bed --out filtered 
+
+../plink --bfile filtered --recode vcf --out vcf_filtered 

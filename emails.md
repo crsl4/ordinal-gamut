@@ -1,0 +1,2 @@
+# To Mike with complete draft
+- replication analysis: nothing significant in common variants, adjusted with p_ACT (qqplot looks good despite lack of PCs adjustment); suggestive significance (using 0.05 as found online), but qqplot does not look good. Checked with Elizabeth, we do not have PCs.

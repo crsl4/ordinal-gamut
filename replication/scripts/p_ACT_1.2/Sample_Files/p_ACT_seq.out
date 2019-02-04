@@ -1,0 +1,12 @@
+p_ACT_seq.R, version 1.1 
+************************************************
+Sequential p_ACT for smallest p-values 
+ 
+Trait	     SNP	   p	   p_ACT
+  bmi	    SNP1	0.01	0.044441
+  sbp	SNP2_add	0.03	 0.11797
+  bmi	SNP2_dom	0.10	      NA
+  dbp	SNP2_add	0.10	      NA
+  bmi	SNP2_add	0.20	      NA
+  bmi	SNP2_rec	0.40	      NA
+  dbp	    SNP1	0.50	      NA

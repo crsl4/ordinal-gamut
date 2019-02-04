@@ -1,0 +1,5 @@
+number of bystro annotations = 136
+number of unique gene matches = 23
+number of plink-filtered variants used for annotation = 136
+min RV per gene filter = 4
+

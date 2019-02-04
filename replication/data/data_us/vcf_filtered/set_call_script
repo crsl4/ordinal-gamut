@@ -1,0 +1,64 @@
+cd by_gene
+
+mkdir !
+cd !
+
+../../plink --bfile ../../first_call/filtered --set ../../good_genes.set --gene ! --recode A --out setdat
+
+cd by_gene
+
+mkdir YWHAZ
+cd YWHAZ
+
+../../plink --bfile ../../first_call/filtered --set ../../good_genes.set --gene YWHAZ --recode A --out setdat
+
+cd by_gene
+
+mkdir GRHL2
+cd GRHL2
+
+../../plink --bfile ../../first_call/filtered --set ../../good_genes.set --gene GRHL2 --recode A --out setdat
+
+cd by_gene
+
+mkdir NCALD
+cd NCALD
+
+../../plink --bfile ../../first_call/filtered --set ../../good_genes.set --gene NCALD --recode A --out setdat
+
+cd by_gene
+
+mkdir UBR5
+cd UBR5
+
+../../plink --bfile ../../first_call/filtered --set ../../good_genes.set --gene UBR5 --recode A --out setdat
+
+cd by_gene
+
+mkdir ODF1
+cd ODF1
+
+../../plink --bfile ../../first_call/filtered --set ../../good_genes.set --gene ODF1 --recode A --out setdat
+
+cd by_gene
+
+mkdir FZD6
+cd FZD6
+
+../../plink --bfile ../../first_call/filtered --set ../../good_genes.set --gene FZD6 --recode A --out setdat
+
+cd by_gene
+
+mkdir RIMS2
+cd RIMS2
+
+../../plink --bfile ../../first_call/filtered --set ../../good_genes.set --gene RIMS2 --recode A --out setdat
+
+cd by_gene
+
+mkdir DPYS
+cd DPYS
+
+../../plink --bfile ../../first_call/filtered --set ../../good_genes.set --gene DPYS --recode A --out setdat
+
+

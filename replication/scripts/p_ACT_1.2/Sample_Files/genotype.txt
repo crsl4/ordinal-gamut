@@ -1,0 +1,7 @@
+SNP1 SNP2_add SNP2_dom SNP2_rec
+0 1 1 0
+0 2 1 1
+1 1 1 0
+2 1 1 0
+NA 0 0 0
+1 0 0 0

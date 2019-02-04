@@ -1,0 +1,453 @@
+---
+title: "Ordinal GAMuT Sims w/ Parents + Addtl Variant Stats"
+author: "Taylor Fischer"
+date: "6/5/2018"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r grabdirs, include=FALSE}
+library(data.table)
+library(reshape2)
+library(kableExtra)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+options(knitr.table.format = "html")
+
+source("/Volumes/JFK_Passport/ordinal_family_history/code/results/helper_functions.r")
+
+home_dir <- "/Volumes/JFK_Passport/ordinal_family_history/code/" ## include trailing slash
+list_of_folders <- list.files(home_dir, pattern = "post")
+```
+
+## 1. Target Prevalence 0.01 vs. 0.05 (Lambda = 2)
+
+```{r block1, echo=FALSE, warning=F, message=F, fig.height=8, fig.width=7}
+input_dir <- c("ordinal_201803061259_post",
+               "ordinal_201803081323_post",
+               "ordinal_flagged_201803151437_post",
+               "ordinal_flagged_201803290940_post",
+               "ordinal_parent_sims_201805231339_post")
+input_dir <- paste0(home_dir,input_dir,"/processed_data")
+alpha <- 5e-5
+filter_by <- list(Nsibsize=c(0,1,2), n_per_group=c(400,750,1000,1500), lambda=2)
+
+list_of_files <- unlist(lapply(input_dir, list.files, full.names=TRUE))
+l <- lapply(list_of_files, get_power, alpha=alpha)
+dat <- {}
+for(i in 1:length(l)) {dat <- rbind(dat,l[[i]])}
+  
+if(!is.na(filter_by)) {
+    for(i in 1:length(filter_by)){
+      varid <- names(filter_by[i])
+      vals <- filter_by[[i]]
+      dat <- dat[dat[,varid]%in%vals,]
+    }
+}
+  
+constant_params <- dat[1,apply(dat, 2, function(col) { length(unique(col))==1 })]
+row.names(constant_params)<-"value"
+dat$method <- factor(dat$method,levels=c("burden","skat","gamut"),
+                     labels=c("Burden Test","SKAT","Ordinal GAMuT"))
+dat$Nsibsize <- factor(dat$Nsibsize, levels=c(1,2,0), 
+                       labels=c("N Siblings 1","N Siblings 2", "Parents Only"))
+dat$effectsize <- factor(dat$effectsize, levels=c(2,4,6), 
+                         labels=c("RV Effect Size 2","RV Effect Size 4","RV Effect Size 6"))
+dat$lambda <- factor(dat$lambda)
+dat$prev_target <- factor(dat$prev_target)
+
+kable(t(constant_params), col.names=" ", caption="constant parameters") %>%
+  kable_styling(bootstrap_options = c("condensed"), full_width = F, position="float_left") %>%
+  row_spec(c(10), bold = T, color = "blue", background = "white")
+
+ggplot(data = dat, aes_string(x = "n_per_group", y = "power", color="method", linetype="prev_target")) + 
+  geom_line() + geom_point(alpha=0.6) + 
+  scale_x_continuous(labels = unique(dat[,"n_per_group"]), breaks = unique(dat[,"n_per_group"])) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) + 
+  facet_grid(paste0("effectsize","~","Nsibsize")) + 
+  guides(color=guide_legend(title="Method"),linetype=guide_legend(title="Prevalence")) +
+  xlab("Samples/Group") + 
+  ylab(paste0("Empirical Power (α = ",alpha,")"))
+
+```
+
+<P style="page-break-before: always">
+## 2. Target Prevalence 0.01 vs. 0.05 (Lambda = 4)
+
+```{r block2, echo=FALSE, warning=F, message=F, fig.height=8, fig.width=7}
+input_dir <- c("ordinal_201803061259_post",
+               "ordinal_201803081323_post",
+               "ordinal_flagged_201803151437_post",
+               "ordinal_flagged_201803290940_post",
+               "ordinal_parent_sims_201805231339_post")
+input_dir <- paste0(home_dir,input_dir,"/processed_data")
+alpha <- 5e-5
+filter_by <- list(Nsibsize=c(0,1,2), n_per_group=c(400,750,1000,1500), lambda=4)
+
+list_of_files <- unlist(lapply(input_dir, list.files, full.names=TRUE))
+l <- lapply(list_of_files, get_power, alpha=alpha)
+dat <- {}
+for(i in 1:length(l)) {dat <- rbind(dat,l[[i]])}
+  
+if(!is.na(filter_by)) {
+    for(i in 1:length(filter_by)){
+      varid <- names(filter_by[i])
+      vals <- filter_by[[i]]
+      dat <- dat[dat[,varid]%in%vals,]
+    }
+}
+  
+constant_params <- dat[1,apply(dat, 2, function(col) { length(unique(col))==1 })]
+row.names(constant_params)<-"value"
+dat$method <- factor(dat$method,levels=c("burden","skat","gamut"),
+                     labels=c("Burden Test","SKAT","Ordinal GAMuT"))
+dat$Nsibsize <- factor(dat$Nsibsize, levels=c(1,2,0), 
+                       labels=c("N Siblings 1","N Siblings 2", "Parents Only"))
+dat$effectsize <- factor(dat$effectsize, levels=c(2,4,6), 
+                         labels=c("RV Effect Size 2","RV Effect Size 4","RV Effect Size 6"))
+dat$lambda <- factor(dat$lambda)
+dat$prev_target <- factor(dat$prev_target)
+
+kable(t(constant_params), col.names=" ", caption="constant parameters") %>%
+  kable_styling(bootstrap_options = c("condensed"), full_width = F, position="float_left") %>%
+  row_spec(c(10), bold = T, color = "blue", background = "white")
+
+ggplot(data = dat, aes_string(x = "n_per_group", y = "power", color="method", linetype="prev_target")) + 
+  geom_line() + geom_point(alpha=0.6) + 
+  scale_x_continuous(labels = unique(dat[,"n_per_group"]), breaks = unique(dat[,"n_per_group"])) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) + 
+  facet_grid(paste0("effectsize","~","Nsibsize")) + 
+  guides(color=guide_legend(title="Method"),linetype=guide_legend(title="Prevalence")) +
+  xlab("Samples/Group") + 
+  ylab(paste0("Empirical Power (α = ",alpha,")"))
+```
+
+<P style="page-break-before: always">
+## 3. Target Prevalence 0.01 vs. 0.05 (Lambda = 8)
+
+```{r block3, echo=FALSE, warning=F, message=F, fig.height=8, fig.width=7}
+input_dir <- c("ordinal_201803061259_post",
+               "ordinal_201803081323_post",
+               "ordinal_flagged_201803151437_post",
+               "ordinal_flagged_201803290940_post",
+               "ordinal_parent_sims_201805231339_post")
+input_dir <- paste0(home_dir,input_dir,"/processed_data")
+alpha <- 5e-5
+filter_by <- list(Nsibsize=c(0,1,2), n_per_group=c(400,750,1000,1500), lambda=8)
+
+list_of_files <- unlist(lapply(input_dir, list.files, full.names=TRUE))
+l <- lapply(list_of_files, get_power, alpha=alpha)
+dat <- {}
+for(i in 1:length(l)) {dat <- rbind(dat,l[[i]])}
+  
+if(!is.na(filter_by)) {
+    for(i in 1:length(filter_by)){
+      varid <- names(filter_by[i])
+      vals <- filter_by[[i]]
+      dat <- dat[dat[,varid]%in%vals,]
+    }
+}
+  
+constant_params <- dat[1,apply(dat, 2, function(col) { length(unique(col))==1 })]
+row.names(constant_params)<-"value"
+dat$method <- factor(dat$method,levels=c("burden","skat","gamut"),
+                     labels=c("Burden Test","SKAT","Ordinal GAMuT"))
+dat$Nsibsize <- factor(dat$Nsibsize, levels=c(1,2,0), 
+                       labels=c("N Siblings 1","N Siblings 2","Parents Only"))
+dat$effectsize <- factor(dat$effectsize, levels=c(2,4,6), 
+                         labels=c("RV Effect Size 2","RV Effect Size 4","RV Effect Size 6"))
+dat$lambda <- factor(dat$lambda)
+dat$prev_target <- factor(dat$prev_target)
+
+kable(t(constant_params), col.names=" ", caption="constant parameters") %>%
+  kable_styling(bootstrap_options = c("condensed"), full_width = F, position="float_left") %>%
+  row_spec(c(10), bold = T, color = "blue", background = "white")
+
+ggplot(data = dat, aes_string(x = "n_per_group", y = "power", color="method", linetype="prev_target")) + 
+  geom_line() + geom_point(alpha=0.6) + 
+  scale_x_continuous(labels = unique(dat[,"n_per_group"]), breaks = unique(dat[,"n_per_group"])) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) + 
+  facet_grid(paste0("effectsize","~","Nsibsize")) + 
+  guides(color=guide_legend(title="Method"),linetype=guide_legend(title="Prevalence")) +
+  xlab("Samples/Group") + 
+  ylab(paste0("Empirical Power (α = ",alpha,")"))
+
+```
+
+<P style="page-break-before: always">
+
+## 4. Target Prevalence 0.01 vs. 0.05 (RV Effect Size = 2)
+
+***NOTE: For figures 4-6 below, the same data as above is represented with different axes.
+
+```{r block4, echo=FALSE, warning=F, message=F, fig.height=8, fig.width=7}
+input_dir <- c("ordinal_201803061259_post",
+               "ordinal_201803081323_post",
+               "ordinal_flagged_201803151437_post",
+               "ordinal_flagged_201803290940_post",
+               "ordinal_parent_sims_201805231339_post")
+input_dir <- paste0(home_dir,input_dir,"/processed_data")
+alpha <- 5e-2
+filter_by <- list(Nsibsize=c(0,1,2), n_per_group=c(400,750,1000,1500), effectsize=2)
+
+list_of_files <- unlist(lapply(input_dir, list.files, full.names=TRUE))
+l <- lapply(list_of_files, get_power, alpha=alpha)
+dat <- {}
+for(i in 1:length(l)) {dat <- rbind(dat,l[[i]])}
+  
+if(!is.na(filter_by)) {
+    for(i in 1:length(filter_by)){
+      varid <- names(filter_by[i])
+      vals <- filter_by[[i]]
+      dat <- dat[dat[,varid]%in%vals,]
+    }
+}
+  
+constant_params <- dat[1,apply(dat, 2, function(col) { length(unique(col))==1 })]
+row.names(constant_params)<-"value"
+dat$method <- factor(dat$method,levels=c("burden","skat","gamut"),
+                     labels=c("Burden Test","SKAT","Ordinal GAMuT"))
+dat$Nsibsize <- factor(dat$Nsibsize, levels=c(1,2,0), 
+                       labels=c("N Siblings 1","N Siblings 2","Parents Only"))
+dat$lambda <- factor(dat$lambda, levels=c(2,4,8), 
+                         labels=c("Lambda 2","Lambda 4","Lambda 8"))
+dat$prev_target <- factor(dat$prev_target)
+
+kable(t(constant_params), col.names=" ", caption="constant parameters") %>%
+  kable_styling(bootstrap_options = c("condensed"), full_width = F, position="float_left") %>%
+  row_spec(c(10), bold = T, color = "blue", background = "white")
+
+ggplot(data = dat, aes_string(x = "n_per_group", y = "power", color="method", linetype="prev_target")) + 
+  geom_line() + geom_point(alpha=0.6) + 
+  scale_x_continuous(labels = unique(dat[,"n_per_group"]), breaks = unique(dat[,"n_per_group"])) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) + 
+  facet_grid(paste0("Nsibsize","~","lambda")) + 
+  guides(color=guide_legend(title="Method"),linetype=guide_legend(title="Prevalence")) +
+  xlab("Samples/Group") + 
+  ylab(paste0("Empirical Power (α = ",alpha,")"))
+
+```
+
+<P style="page-break-before: always">
+## 5. Target Prevalence 0.01 vs. 0.05 (RV Effect Size = 4)
+
+```{r block5, echo=FALSE, warning=F, message=F, fig.height=8, fig.width=7}
+input_dir <- c("ordinal_201803061259_post",
+               "ordinal_201803081323_post",
+               "ordinal_flagged_201803151437_post",
+               "ordinal_flagged_201803290940_post",
+               "ordinal_parent_sims_201805231339_post")
+input_dir <- paste0(home_dir,input_dir,"/processed_data")
+alpha <- 5e-5
+filter_by <- list(Nsibsize=c(0,1,2), n_per_group=c(400,750,1000,1500), effectsize=4)
+
+list_of_files <- unlist(lapply(input_dir, list.files, full.names=TRUE))
+l <- lapply(list_of_files, get_power, alpha=alpha)
+dat <- {}
+for(i in 1:length(l)) {dat <- rbind(dat,l[[i]])}
+  
+if(!is.na(filter_by)) {
+    for(i in 1:length(filter_by)){
+      varid <- names(filter_by[i])
+      vals <- filter_by[[i]]
+      dat <- dat[dat[,varid]%in%vals,]
+    }
+}
+  
+constant_params <- dat[1,apply(dat, 2, function(col) { length(unique(col))==1 })]
+row.names(constant_params)<-"value"
+dat$method <- factor(dat$method,levels=c("burden","skat","gamut"),
+                     labels=c("Burden Test","SKAT","Ordinal GAMuT"))
+dat$Nsibsize <- factor(dat$Nsibsize, levels=c(1,2,0), 
+                       labels=c("N Siblings 1","N Siblings 2","Parents Only"))
+dat$lambda <- factor(dat$lambda, levels=c(2,4,8), 
+                         labels=c("Lambda 2","Lambda 4","Lambda 8"))
+dat$prev_target <- factor(dat$prev_target)
+
+kable(t(constant_params), col.names=" ", caption="constant parameters") %>%
+  kable_styling(bootstrap_options = c("condensed"), full_width = F, position="float_left") %>%
+  row_spec(c(10), bold = T, color = "blue", background = "white")
+
+ggplot(data = dat, aes_string(x = "n_per_group", y = "power", color="method", linetype="prev_target")) + 
+  geom_line() + geom_point(alpha=0.6) + 
+  scale_x_continuous(labels = unique(dat[,"n_per_group"]), breaks = unique(dat[,"n_per_group"])) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) + 
+  facet_grid(paste0("Nsibsize","~","lambda")) + 
+  guides(color=guide_legend(title="Method"),linetype=guide_legend(title="Prevalence")) +
+  xlab("Samples/Group") + 
+  ylab(paste0("Empirical Power (α = ",alpha,")"))
+
+```
+
+<P style="page-break-before: always">
+## 6. Target Prevalence 0.01 vs. 0.05 (RV Effect Size = 6)
+
+```{r block6, echo=FALSE, warning=F, message=F, fig.height=8, fig.width=7}
+input_dir <- c("ordinal_201803061259_post",
+               "ordinal_201803081323_post",
+               "ordinal_flagged_201803151437_post",
+               "ordinal_flagged_201803290940_post",
+               "ordinal_parent_sims_201805231339_post")
+input_dir <- paste0(home_dir,input_dir,"/processed_data")
+alpha <- 5e-5
+filter_by <- list(Nsibsize=c(0,1,2), n_per_group=c(400,750,1000,1500), effectsize=6)
+
+list_of_files <- unlist(lapply(input_dir, list.files, full.names=TRUE))
+l <- lapply(list_of_files, get_power, alpha=alpha)
+dat <- {}
+for(i in 1:length(l)) {dat <- rbind(dat,l[[i]])}
+  
+if(!is.na(filter_by)) {
+    for(i in 1:length(filter_by)){
+      varid <- names(filter_by[i])
+      vals <- filter_by[[i]]
+      dat <- dat[dat[,varid]%in%vals,]
+    }
+}
+  
+constant_params <- dat[1,apply(dat, 2, function(col) { length(unique(col))==1 })]
+row.names(constant_params)<-"value"
+dat$method <- factor(dat$method,levels=c("burden","skat","gamut"),
+                     labels=c("Burden Test","SKAT","Ordinal GAMuT"))
+dat$Nsibsize <- factor(dat$Nsibsize, levels=c(1,2,0), 
+                       labels=c("N Siblings 1","N Siblings 2","Parents Only"))
+dat$lambda <- factor(dat$lambda, levels=c(2,4,8), 
+                         labels=c("Lambda 2","Lambda 4","Lambda 8"))
+dat$prev_target <- factor(dat$prev_target)
+
+kable(t(constant_params), col.names=" ", caption="constant parameters") %>%
+  kable_styling(bootstrap_options = c("condensed"), full_width = F, position="float_left") %>%
+  row_spec(c(10), bold = T, color = "blue", background = "white")
+
+ggplot(data = dat, aes_string(x = "n_per_group", y = "power", color="method", linetype="prev_target")) + 
+  geom_line() + geom_point(alpha=0.6) + 
+  scale_x_continuous(labels = unique(dat[,"n_per_group"]), breaks = unique(dat[,"n_per_group"])) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) + 
+  facet_grid(paste0("Nsibsize","~","lambda")) + 
+  guides(color=guide_legend(title="Method"),linetype=guide_legend(title="Prevalence")) +
+  xlab("Samples/Group") + 
+  ylab(paste0("Empirical Power (α = ",alpha,")"))
+
+```
+
+
+<P style="page-break-before: always">
+## 7. Variant Stats (Effect Size=2, N Per Group=1000)
+
+***NOTE: The results below apply only to simulations with 1 or 2 siblings. No simulation data with parents included as family history are shown. 
+
+```{r block8_2, echo=FALSE, warning=F, message=F, fig.height=5, fig.width=10}
+input_dir <- c("ordinal_flagged_201803141731_post",
+                "ordinal_flagged_201803151437_post",
+               "ordinal_flagged_201803290940_post",
+               "ordinal_flagged_201805241446_post")
+load(paste0(home_dir,input_dir[1],"/processed_flagged_data/flagged.RData"))
+idat <- final
+load(paste0(home_dir,input_dir[2],"/processed_flagged_data/flagged.RData"))
+idat <- rbind(idat, final)
+load(paste0(home_dir,input_dir[3],"/processed_flagged_data/flagged.RData"))
+idat <- rbind(idat, final)
+load(paste0(home_dir,input_dir[4],"/processed_flagged_data/flagged.RData"))
+idat <- rbind(idat, final)
+
+
+idat <- idat[idat$Nsibsize%in%c(1,2),]
+idat <- idat[idat$n_per_group%in%1000,]
+idat <- idat[idat$effectsize%in%2,]
+
+idat$group <- as.character(idat$group)
+idat$group <- factor(idat$group, levels=c("0_kept=","1_kept=","2_kept="),
+                      labels=c("Control",
+                               "Case NFH",
+                               "Case FH"))
+
+idat$Nsibsize <- factor(idat$Nsibsize,levels=c(1,2),labels=c("N Siblings 1", "N Siblings 2"))
+idat$lambda <- factor(idat$lambda, levels=c(2,4,8), labels=c("Lambda 2", "Lambda 4", "Lambda 8"))
+idat$prev_target <- factor(idat$prev_target)
+
+# avg MAF
+plotdat <- idat[idat$measure%in%"avg.maf.IP",]
+ggplot(data=plotdat,aes(x=group,y=mean,fill=prev_target))+
+  geom_bar(color="black",stat="identity",position = "dodge")+ggtitle("Average MAF in index proband")+
+  facet_grid(Nsibsize~lambda)+labs(y="Average (of 1000 Simulations)",x="Group")+
+ # theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(), axis.title.x=element_blank())+
+  guides(fill = guide_legend("Target Prev"))+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(.9))+ 
+  geom_text(
+    aes(label = round(mean,3), y = mean+sd+ 0.002),
+    position = position_dodge(0.9),
+    vjust = 0, size=3
+  )
+
+# n.variants.IP
+plotdat <- idat[idat$measure%in%"n.variants.IP",]
+ggplot(data=plotdat,aes(x=group,y=mean,fill=prev_target))+
+  geom_bar(color="black",stat="identity",position = "dodge")+ggtitle("Average number of variants in index proband")+
+  facet_grid(Nsibsize~lambda)+labs(y="Average (of 1000 Simulations)",x="Group")+
+ # theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(), axis.title.x=element_blank())+
+  guides(fill = guide_legend("Target Prev"))+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(.9))+ 
+  geom_text(
+    aes(label = round(mean,2), y = mean+sd+ 1),
+    position = position_dodge(0.9),
+    vjust = 0, size=3
+  )
+
+# n rare variants
+plotdat <- idat[idat$measure%in%"n.rare.IP",]
+ggplot(data=plotdat,aes(x=group,y=mean,fill=prev_target))+
+  geom_bar(color="black",stat="identity",position = "dodge")+ggtitle("Average number of rare variants in index proband")+
+  facet_grid(Nsibsize~lambda)+labs(y="Average (of 1000 Simulations)",x="Group")+
+ # theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(), axis.title.x=element_blank())+
+  guides(fill = guide_legend("Target Prev"))+
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                position=position_dodge(.9))+ 
+  geom_text(
+    aes(label = round(mean,2), y = mean+sd+0.08),
+    position = position_dodge(0.9),
+    vjust = 0, size=3
+  )
+
+# n causal variants
+plotdat <- idat[idat$measure%in%"n.causal.IP",]
+ggplot(data=plotdat,aes(x=group,y=mean,fill=prev_target))+
+  geom_bar(color="black",stat="identity",position = "dodge")+ggtitle("Average number of causal rare variants in index proband")+
+  facet_grid(Nsibsize~lambda)+labs(y="Average (of 1000 Simulations)",x="Group")+
+ # theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(), axis.title.x=element_blank())+
+  guides(fill = guide_legend("Target Prev"))+
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                position=position_dodge(.9))+ 
+  geom_text(
+    aes(label = round(mean,2), y = mean+sd+0.08),
+    position = position_dodge(0.9),
+    vjust = 0, size=3
+  )
+
+# prob disease
+plotdat <- idat[idat$measure%in%"pdis.IP",]
+ggplot(data=plotdat,aes(x=group,y=mean,fill=prev_target))+
+  geom_bar(color="black",stat="identity",position = "dodge")+ggtitle("Average probability of disease of index proband")+
+  facet_grid(Nsibsize~lambda)+labs(y="Average (of 1000 Simulations)",x="Group")+
+ # theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(), axis.title.x=element_blank())+
+  guides(fill = guide_legend("Target Prev"))+
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                position=position_dodge(.9))+ 
+  geom_text(
+    aes(label = round(mean,2), y = mean+sd+0.015),
+    position = position_dodge(0.9),
+    vjust = 0, size=3
+  )
+```

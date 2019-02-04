@@ -1,0 +1,119 @@
+---
+title: "Cleft Data Analysis"
+author: "Taylor Fischer"
+date: "7/10/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r grabdirs, include=FALSE}
+library(data.table)
+library(reshape2)
+library(kableExtra)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+library(qqman)
+options(knitr.table.format = "latex")
+
+dir <- "/Volumes/JFK_Passport/ordinal_family_history/analysis_cleft_pass_9/"
+source(paste0(dir,"applied_functions.R"))
+```
+
+### study sample
+
+```{r demog, echo=F}
+## study population files
+load("/Volumes/JFK_Passport/ordinal_family_history/data_cleft/OFC_data_May2018.RData")
+print("number of subjects by PC group:")
+table(OFC$pcgroup)
+print("number of subjects by PC group and cleft (case/control) status:")
+table(OFC$AnalysisGroup_CaseControlOnly,OFC$pcgroup)
+#print("number of subjects by cleft status:")
+#OFC$clefttype[OFC$clefttype==-9999] <- NA
+#table(OFC$AnalysisGroup_CaseControlOnly,OFC$clefttype)
+
+## cleft lip (+ cleft lip&palette)
+dat <- OFC[OFC$pcgroup %in% "CAUCASIAN",]
+print("cleft type across Caucasian subjects:")
+table(dat$AnalysisGroup_CaseControlOnly, dat$clefttype,useNA = "ifany")
+dat$cleft_type_revised <- dat$clefttype
+dat$cleft_type_revised[dat$cleft_type_revised %in% c(2,3)] <- 2.5
+#table(dat$AnalysisGroup_CaseControlOnly, dat$cleft_type_revised,useNA = "always")
+dat$cleft_type_revised <- factor(dat$cleft_type_revised, levels=c(0,1,2.5,4),labels=c("unaffected",
+                                                                                      "cleft but unknown type",
+                                                                                      "cleft lip or lip+palate",
+                                                                                      "cleft palate only"))
+print("cleft type across Caucasian subjects [grouping cleft lip with cleft lip and palate (2 + 3)]:")
+table(dat$AnalysisGroup_CaseControlOnly,dat$cleft_type_revised)
+dat <- dat[dat$AnalysisGroup_CaseControlOnly%in%c("CASE","CONTROL"),]
+#table(dat$AnalysisGroup_CaseControlOnly,dat$cleft_type_revised)
+
+dat_control <- dat[dat$AnalysisGroup_CaseControlOnly %in% "CONTROL",]
+dat <- dat[dat$cleft_type_revised %in% "cleft lip or lip+palate",]
+dat <- rbind(dat,dat_control)
+#table(dat$AnalysisGroup_CaseControlOnly,dat$cleft_type_revised)
+dat$CLEFT <- 1
+dat$CLEFT[dat$cleft_type_revised %in% "cleft lip or lip+palate"] <- 2
+print("subjects by cleft (1=control,2=cleft lip or lip+palate) and by FH status (0=no FH, 1=FH):")
+table(dat$CLEFT, dat$Multiplex, useNA = "ifany")
+
+print("total number of subjects remaining for analysis:")
+length(unique(dat$iid))
+```
+
+### variant filtering and annotation 
+
+PLINK options in effect:
+
+- chr 0,1-22
+- geno 0.05
+- maf 0.001
+- max-maf 0.05
+
+```{r block1, echo=F}
+bim <- read.delim(paste0(dir,"first_call/filtered.bim"), header=FALSE, stringsAsFactors=FALSE)
+paste0("number of plink-filtered variants used for annotation = ",nrow(bim))
+paste0("number of bystro annotations = ", "51438")
+
+gdat <- read.delim(paste0(dir,"bystro/bystro_gene_sets.txt"),sep="\t",stringsAsFactors = F)
+g_uniq <- unique(gdat$gene)
+paste0("number of unique gene matches from bystro = ",length(g_uniq))
+```
+
+### min # RV per gene = 4
+
+```{r res1, echo=F}
+dir <- "/Volumes/JFK_Passport/ordinal_family_history/analysis_cleft_pass_9/"
+load(paste0(paste0(dir,"by_gene/res_with_loc.Rda")))
+colnames(res_with_loc) <- c("gene","p.burden","p.skat","p.gamut","chr","bp")
+paste0("number of tests (ie. number of genes with at least 4 rare variants) = ",nrow(res_with_loc))
+```
+
+- blue line = suggestive line = -log10(1e-04) = 4
+- red line = genomewide line = -log10(0.05/5137) = 5.0117 
+
+```{r res3, echo=F, fig.width=4, fig.height=4}
+manhattan(res_with_loc, chr = "chr", bp = "bp", p = "p.gamut",snp="gene",
+  col = c("blue4", "orange3"), chrlabs = NULL, annotatePval = 1e-3,
+  suggestiveline = -log10(1e-04), genomewideline = -log10(0.05/5137),main="ordinal GAMuT",ylim=c(0,6))
+
+qq(res_with_loc$p.gamut, main = "Q-Q plot of ordinal GAMuT p-values")
+
+manhattan(res_with_loc, chr = "chr", bp = "bp", p = "p.skat",snp="gene",
+  col = c("blue4", "orange3"), chrlabs = NULL, annotatePval = 1e-3,
+  suggestiveline = -log10(1e-04), genomewideline = -log10(0.05/5137), main="SKAT",ylim=c(0,6))
+
+qq(res_with_loc$p.skat, main = "Q-Q plot of SKAT p-values")
+
+manhattan(res_with_loc, chr = "chr", bp = "bp", p = "p.burden",snp="gene",
+  col = c("blue4", "orange3"), chrlabs = NULL, annotatePval = 1e-3,
+  suggestiveline = -log10(1e-04), genomewideline = -log10(0.05/5137), main="burden",ylim=c(0,6))
+
+qq(res_with_loc$p.burden, main = "Q-Q plot of burden test p-values")
+
+```
+

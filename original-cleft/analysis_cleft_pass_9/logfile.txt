@@ -1,0 +1,7 @@
+number of bystro annotations = 51438
+number of unique gene matches = 14837
+number of plink-filtered variants used for annotation = 61671
+min RV per gene filter = 4
+number of tests (num genes meeting min RV threshold) = 5138
+phenotypic similarity = linear kernel
+

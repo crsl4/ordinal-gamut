@@ -1,0 +1,159 @@
+---
+title: "Enhanced Case-Control Association Analyses Leveraging Family History"
+author: Taylor Fischer, Claudia Solis-Lemus, Elizabeth Leslie, Debashis Ghosh, David
+  Cutler, Michael Epstein
+documentclass: article
+output:
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+    keep_tex: yes
+    toc: no
+geometry: margin=1in
+graphics: yes
+fontsize: 11pt
+site: bookdown::bookdown_site
+bibliography: ordinal-skat.bib
+---
+
+```{r set-options, echo=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, 
+                      error=FALSE, echo=FALSE)
+```
+
+# Introduction
+
+Standard methods for case-control association studies of rare and common variation often treat disease outcome as a dichotomous phenotype. However, both theoretical and experimental studies have demonstrated that cases with a family history of disease can be enriched for risk variation relative to sporadic cases. Likewise, controls with a family history of disease can harbor more risk variation than controls without such history. 
+
+Assuming family-history information is available, this observation motivates the idea of replacing the standard dichotomous outcome variable in case-control studies with a more informative outcome variable that distinguishes cases with and without family history, and controls. The rationale is that subjects with family history (FH) can be more enriched for variants of most common diseases. That is, we expect to see more causal variants in cases with family history and want to leverage this trend in our association test. 
+
+
+Potential options for enhanced outcome variables include ordinal categorical variables and conditional means from liability-threshold models.
+
+We show in this paper that leveraging family-history information via ordinal categorical variables can greatly improve power in rare-variant association tests compared to standard dichotomous modeling of disease phenotypes that ignore such information. We further illustrate our methods using GWAS and NGS data from a genome-wide study of craniofacial defects [@Leslie2016], [@Leslie2016b]. 
+
+
+# Methods
+
+## Background GAMuT
+
+We assume a sample of $N$ subjects that are genotyped for $S$ rare variants in a gene of interest and are measured for $L$ phenotypes. Let $\mathbf{Y}$ denote the $N \times L$ matrix of phenotypes and $\mathbf{G}$ denote the $N \times S$ matrix of genotypes. We can then construct a phenotype similarity matrix P using projection matrix or linear kernels.
+
+We construct the genotype similarity matrix $\mathbf{K}$ from genotype matrix $\mathbf{G}$. We can then test for dependency between the two similarity matrices using the test statistic: $Q = \frac{1}{N}trace(\mathbf{K}_C\mathbf{P}_C)$, where $\mathbf{K}_c$ and $\mathbf{P}_c$ are centered versions of $\mathbf{K}$ and $\mathbf{P}$, respectively. $Q$ follows an asymptotic mixed chi-square distribution under the null hypothesis of no association [@Broadaway2016]. We then use Davies’ method [@Davies1980] to analytically calculate the p-value of $Q$.
+
+## Ordinal GAMuT
+
+For individual $i$, define the ordinal score as $Y_i$ = $0$ (control), $1$ (case without FH), $2$ (case with FH)
+
+Fit a cumulative logit model with $Y_i$ as the response, and given covariates $X_i$ as predictors. If no covariates are given, the cumulative logit model is fit simply with intercept. The residuals of the cumulative logit model are used as the phenotype, denoted as $R_i$ for individual $i$
+
+Kernel distance covariance on $\mathbf{R}$ to get a similarity matrix of phenotypes, and on $\mathbf{G}$ to get a similarity matrix of genotypes
+
+Test for dependence between the two similarity matrices GAMuT [@Broadaway2016].
+
+
+# Simulations
+
+Simulation setup:
+1000 simulations for power, 10,000 simulations for type I error
+Sequence length (bp) = 10,000
+num european haplotypes = 10,000
+Rare variant threshold = 0.03
+% causal variants = 0.15
+Disease prevalence = 0.01, 0.05
+Effect size = $C \log_{10}(MAF)$; C=2,4,8
+
+To evaluate the power of our method, we simulated sequences for trios, and defined rare variants as those with $MAF<3%$. We assumed proportion of causal variants to be 15%, with effect size given by  
+$C|\log_{10}(MAF)|$, where we varied C=2,4,8. The proband’s probability of disease depended on the sequence data, while the parents’ probability of disease depended on the sequence data and the conditional recurrence risk ratio ($\lambda$) as well.
+
+Our method (ordinal GAMuT) outperformed the burden test [@Li2008] and SKAT [@Wu2011], with power increasing as sample size increases and as rare variant effect size increases (Fig. 2).
+
+
+We generated sequence and disease data for a proband and a certain number of siblings. If the proband was unaffected, we defined the person as a control. If the proband was affected, we defined the person as case without FH if siblings were unaffected or a case with FH if siblings were affected. We show the average number of causal rare variants in simulated datasets comprised of 1000 controls, 1000 cases without FH, and 1000 cases with FH. Simulated datasets assumed a 10kb region and rare variants defined as those with MAF <3%. We assumed the proportion of causal rare variants was 15% with an effect size of $2|\log_{10}(MAF)|$. We used two values of prevalence $(0.01, 0.05)$, either one or two siblings, and three values of conditional recurrence risk ratios ($\lambda$) [@Epstein2015]: 2,4 and 8 (Fig. (ref:causalvar)).
+
+
+```{r causalvar, out.width='50%', fig.align='center', fig.cap='Average of 1000 simulations of number of causal rare variants in proband for three groups: controls, cases without family history, and cases with family history under two disease prevalences (red=0.01, blue=0.05), with one (top) or two (bottom) siblings, and three conditional recurrence risk ratios as columns.', fig.subcap=c("","","")}
+knitr::include_graphics('figures/causalvar2.png')
+```
+
+hello
+
+
+```{r qq, out.width='33%', fig.cap="Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test [@Li2008], SKAT [@Wu2011] and the ordinal GAMuT here proposed",fig.show='hold'}
+knitr::include_graphics(c('figures/qq-burden.pdf','figures/qq-skat.pdf','figures/qq-gamut.pdf'))
+```
+
+
+
+## Power Simulations
+
+Power simulations by different conditional recurrence risk ratios in figures \@ref(fig:power-lambda2) ($\lambda=2$), \@ref(fig:power-lambda4) ($\lambda=4$), and \@ref(fig:power-lambda8) ($\lambda=8$), and power simulations by different effect sizes in figures \@ref(fig:power-effect2) ($C=2$), \@ref(fig:power-effect4) ($C=4$) and \@ref(fig:power-effect6) ($C=6$). Columns refer to the scenario of family: parents, one sibling or two siblings, and we compare the empirical power for sample sizes of $N=400,750,1000,1500$ subjects per group. We compare two disease prevalences $0.01,0.05$. Our method (ordinal GAMuT) outperformed the burden test [@Li2008] and SKAT [@Wu2011], with power increasing as sample size increases and as rare variant effect size increase.
+
+
+```{r power-lambda2, out.width='50%', fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (red), SKAT (green) and ordinal GAMuT (blue). We compared two disease prevalences: 0.01 (solid lines), 0.05 (dashed lines), different number of siblings (columns), different effect sizes for the rare variants (rows). Simulations using conditional recurrence risk ratio $\\lambda=2$.'}
+knitr::include_graphics('figures/power-ordinal-lambda2.png')
+```
+
+
+
+
+```{r power-lambda4, out.width='50%', fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (red), SKAT (green) and ordinal GAMuT (blue). We compared two disease prevalences: 0.01 (solid lines), 0.05 (dashed lines), different number of siblings (columns), different effect sizes for the rare variants (rows). Simulations using conditional recurrence risk ratio $\\lambda=4$.'}
+knitr::include_graphics('figures/power-ordinal-lambda4.png')
+```
+
+
+
+
+```{r power-lambda8, out.width='50%', fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (red), SKAT (green) and ordinal GAMuT (blue). We compared two disease prevalences: 0.01 (solid lines), 0.05 (dashed lines), different number of siblings (columns), different effect sizes for the rare variants (rows). Simulations using conditional recurrence risk ratio $\\lambda=8$.'}
+knitr::include_graphics('figures/power-ordinal-lambda8.png')
+```
+
+
+
+
+```{r power-effect2, out.width='50%', fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (red), SKAT (green) and ordinal GAMuT (blue). We compared two disease prevalences: 0.01 (solid lines), 0.05 (dashed lines), different conditional recurrence risk ratio (columns), different number of siblings (rows). Simulations using effect size $C=2$.'}
+knitr::include_graphics('figures/power-ordinal-effect2.png')
+```
+
+
+
+
+```{r power-effect4, out.width='50%', fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (red), SKAT (green) and ordinal GAMuT (blue). We compared two disease prevalences: 0.01 (solid lines), 0.05 (dashed lines), different conditional recurrence risk ratio (columns), different number of siblings (rows). Simulations using effect size $C=4$.'}
+knitr::include_graphics('figures/power-ordinal-effect4.png')
+```
+
+
+
+
+
+```{r power-effect6, out.width='50%', fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (red), SKAT (green) and ordinal GAMuT (blue). We compared two disease prevalences: 0.01 (solid lines), 0.05 (dashed lines), different conditional recurrence risk ratio (columns), different number of siblings (rows). Simulations using effect size $C=6$.'}
+knitr::include_graphics('figures/power-ordinal-effect6.png')
+```
+
+
+# Analysis of Cleft Cohort
+
+We applied our method to a Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS [@Leslie2016], [@Leslie2016b] with 1,411 Caucasian subjects (267 cases with family history, 309 cases without family history and 835 controls) and 61,671 variants used for annotation with Bystro [@Kotlar2017]. 
+
+We filtered rare variants with MAF $[0.001,0.05]$, and filtered genes to having minimum 4 rare variants, which resulted in 5,137 gene tests. 
+
+We tested the association between the 5,137 genes and cleft lip or cleft lip+palate status, adjusting for select covariates and PCs for population structure. 
+
+We compared our results (ordinal GAMuT) with burden and SKAT approach. 
+
+Our novel method identified a gene (GRHL2, containing 4 SNPs in our data) on chromosome 8 that passes the suggestive significance threshold (Fig. 4).
+
+
+# Discussion
+
+Simulation studies of rare variant sets showed that our ordinal GAMuT method is more powerful compared to usual gene-based tests like burden test [@Li2008] and SKAT [@Wu2011]. 
+Applying our method to Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS [@Leslie2016], [@Leslie2016b], we identified a gene (GRHL2) (not previously reported) to associate with cleft lip and palate phenotypes. 
+GRHL2 is in the same gene family as GRHL3, which is a transcription factor that is mutated in syndromic forms of clefting and is associated with nonsyndromic clefting [@Leslie2016], [@Leslie2016b], [@Carpinelli2017], [@PeyrardJanvid2014].
+Burden and SKAT on these same phenotypes (Fig. 4) failed to identify any significant or suggestive genes.
+
+\begin{footnotesize}
+\noindent \textbf{Acknowledgements} Samples provided by Kaare Christensen (University of Southern Denmark), Frederic W.B. Deleyiannis (University of Colorado School of Medicine, Denver), Jacqueline T. Hecht (McGovern Medical School and School of Dentistry UT Health at Houston), George L. Wehby (University of Iowa), Seth M. Weinberg (University of Pittsburgh), Jeffrey C. Murray (University of Iowa) and Mary L. Marazita (University of Pittsburgh).
+This work was supported by NIH grants GM117946 [MP,DG], HG007508 [MP], R00-DE025060 [EJL], X01-HG007485 [MLM], R01-DE016148 [MLM, SMW], U01-DE024425 [MLM], R37-DE008559 [JCM, MLM], R21-DE016930 [MLM], R01-DE012472 [MLM], R01-DE011931 [JTH], R01-DE011948 [KC], U01-DD000295 [GLW]; NIH contract to the Johns Hopkins Center for Inherited Disease Research: HHSN268201200008I.
+\end{footnotesize}
+
+

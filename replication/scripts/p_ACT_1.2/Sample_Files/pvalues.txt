@@ -1,0 +1,7 @@
+bmi SNP1 .01 -1
+bmi SNP2_add .2  2 
+bmi SNP2_dom .1  2 
+bmi SNP2_rec .4  2 
+dbp SNP1 .5  1
+dbp SNP2_add .1  2 
+sbp SNP2_add .03  -1
