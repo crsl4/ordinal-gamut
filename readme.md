@@ -1,4 +1,4 @@
-# Taylor project 
+# Ordinal GAMuT 
 
 Meeting 8/27/2018
 
@@ -65,9 +65,8 @@ This Rmd file has the code to create specific CSV files that will later be used 
 
 
 # Running bystro
-Hi Claudia,
 
-No worries! Hope you are having a nice rainy-but-not-really-snowy day :) Here’s an outline for running Bystro:
+Here’s an outline for running Bystro:
 
 1. When you run “terminal_script”, the last line generates “vcf_filtered.vcf”
 2. Go to https://bystro.io/
@@ -83,7 +82,3 @@ No worries! Hope you are having a nice rainy-but-not-really-snowy day :) Here’
 12. Open the downloaded file ending in “annotation.tsv.gz” to generate the “annotation.tsv” file
 13. You can then continue running script.R, which will read in and format that file
 
-Let me know if you have any problems!
-
-Best,
-Taylor
