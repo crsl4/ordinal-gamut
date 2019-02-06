@@ -1,6 +1,6 @@
 --- 
 title: "Enhanced Case-Control Association Analyses Leveraging Family History"
-author: "Taylor Fischer, Claudia Solis-Lemus, Cuining Liu, Elizabeth Leslie, Debashis Ghosh, David Cutler, Michael Epstein"
+author: "Claudia Solis-Lemus$^+$, Taylor Fischer$^+$, Cuining Liu, Elizabeth Leslie, Debashis Ghosh, David Cutler, Michael Epstein"
 site: bookdown::bookdown_site
 output: 
    bookdown::pdf_book:
@@ -172,7 +172,7 @@ and SKAT [@Wu2011].
 
 For the genetic data, we simulated 10,000 haplotypes of 10 kb in size using COSI [@cosi], 
 a coalescent model that accounts for LD pattern, local recombination rate, and population 
-history for individuals of European descent. We defined rare variants as those with $MAF<3%$. 
+history for individuals of European descent. We defined rare variants as those with $MAF<3\%$. 
 For the power simulations, we assumed the proportion of causal variants to be $15\%$, 
 with effect size given by $C|\log_{10}(MAF)|$, where we varied $C=2,4,8$. This setup defines the 
 effect size of any given causal variant as inversely proportional to its MAF, which implies
@@ -216,15 +216,28 @@ We simulated one binary phenotype for each subject (disease status). Then we use
 
 # Analysis of Pittsburgh Orofacial Cleft Multiethnic GWAS
 
-Orofacial clefts: cleft lip (CL), cleft palate (CP), and cleft lip with cleft palate (CLP) 
+Orofacial clefts (OFCs) such as cleft lip (CL), cleft palate (CP), and cleft lip with cleft palate (CLP) 
 are among the most common birth defects in humans with prevalence between 1 in 500 and 
-1 in 2,500 live births [@Tessier1976], [@Mossey2009].
+1 in 2,500 live births [@Tessier1976], [@Mossey2009]. Much work has been done to identify the genetic factors of OFCs, but the exact interaction of genetic and environmental risk factors is still not completely understood. Extensive recent studies have elucidated some light in the identification of common nucleotide variants associated with orofacial clefts, such as 1p22.1, 2p24.2, 3q29, 8q24.21, 10q25.3, 12q12, 16p13.3, 17q22, 17q23, 19q13, and 20q12 [@Birnbaum2009, @Grant2009, @Beaty2010, @Mangold2009, @Wolf2015, @Leslie2016, @Leslie2016b, @Mostowska2018].
+However, the knowledge of genetic factors is not complete, most likely due to allelic heterogeneity between populations, incomplete penetrance or epistasis. 
+
+The Pittsburgh Orofacial Cleft Multiethnic GWAS [@Leslie2016, @Leslie2016b] seeks to identify genetic variants that are associated with the risk of OFCs. This dataset includes a multi-ethnic cohort with 11,727 participants from 13 countries from North, Central or South America. Asia, Europe and Africa. Most of the participants were recruited as part of genetic and phenotyping studies by the University of Pittsburgh Center for Craniofacial and Dental Genetics, and some by the University of Iowa. The study cohort includes OFC-affected probands with their family members, and controls without history of OFC. The affection status cleft lip (CL) with or without palate (CL/P).
+
+We performed standard data cleaning and quality control (see @Leslie2016). We kept only Caucasian participants, and we kept rare variants with MAF in $(0.001,0.05)$ and genotype call rate greater than $95\%$.
+
+The final sample consisted of 1411 individuals, among which there were 835 controls, 309 cases without family history and 267 cases with family history. We did not include any covariates except for the 5 PCs (see @Leslie2016 for the details on the PCA).
+We applied ordinal GAMuT using linear kernel to measure pairwise phenotypic similarity.
+We also ran SKAT and burden test. For GAMuT and SKAT tests, we used a weighted linear kernel (with the weighting scheme in @Wu2011) to measure pairwise genotypic similarity.
+
+## Replication sample
+
+The replication analysis involved 845 patients, among which 570 were controls and 275 were non-syndromic cleft lip ith or without palate (nsCL/P) [@Mostowska2018]. This dataset included variants in the region 8q22.3 (hg19 chr8:$101,600,001-106,200,000$). SNPs with SNP call rate less than $0.95$ were excluded as well as samples with sample call rate less than $0.95$. Given that we do not have family information for this dataset, we could not fit the ordinal GAMuT approach here proposed. We ran SKAT and burden test for the rare variants (MAF in $(0.001,0.05)$), and standard GWAS logistic tests on the common variants under the dominant model adjusting p-values with the methodology in @Conneely2008 for correlated tests.
 
 # Results
 
 ## Enrichment of causal variants
 
-We show the average number of causal rare variants in simulated datasets comprised of 1000 controls, 1000 cases without FH, and 1000 cases with FH (Fig. \@ref(fig:causalvar)).
+In figure \@ref(fig:causalvar), we show that, as expected, the average number of causal rare variants and the average probability of disease is greater for the cases with family history, followed by cases without family history, and lastly for controls. This simulated dataset comprises of 1000 controls, 1000 cases without family history, and 1000 cases with family history for three levels of conditional recurrence risk ratios (columns: $\lambda=2,4,8$) and 1 or 2 siblings as family history (rows).
 
 ```{r, include=FALSE}
 ##knitr::include_graphics('figures/causalvar2.png')
@@ -304,7 +317,7 @@ grid.arrange(p1,p2noleg,leg,ncol=3,widths=c(4,4,1))
 
 ## Type I Error Simulations
 
-Figure \@ref(fig:qq) show the quantile-quantile (QQ) plots of 10,000 null simulations with 750 subjects per group (2250 in total), target disease prevalence of $0.01$, and $\lambda=2$. We show the comparison with ordinal GAMuT, SKAT and burden test. All methods compared properly control the type I error.
+Figure \@ref(fig:qq) shows the quantile-quantile (QQ) plots of 10,000 null simulations with 750 subjects per group (2250 in total), target disease prevalence of $0.01$, and $\lambda=2$. We show the comparison with ordinal GAMuT, SKAT and burden test. All methods compared properly control the type I error.
 
 
 ```{r qq, out.width='33%', fig.cap="Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test \\citep{Li2008}, SKAT \\citep{Wu2011} and the ordinal GAMuT here proposed, with target disease prevalence of 0.01, lambda=2. Simulated datasets (100,000) assumed a 10kb region and rare variants defined as those with MAF <3\\%.",fig.show='hold'}
@@ -313,7 +326,8 @@ knitr::include_graphics(c('figures/qq-burden.pdf','figures/qq-skat.pdf','figures
 
 ## Power Simulations
 
-Power simulations by different effect sizes in figures ($C=2,4,6$). Columns refer to the conditional recurrence risk ratio $\lambda=2,4,8$, and rows refer to disease prevalences $0.01,0.05$ (figure \@ref(fig:power-plot)). We present the scenario where family history involves parents only, no siblings, and we compare the empirical power for sample sizes of $N=400,750,1000,1500$ subjects per group. Our method (ordinal GAMuT) outperformed the burden test [@Li2008] and SKAT [@Wu2011], with power increasing as sample size increases and as rare variant effect size increase.
+Now, we compare the power of ordinal GAMuT with SKAT and burden test (figure \@ref(fig:power-plot)). The power was estimated by computing the proportion of p-values less than the significance level ($\alpha=0.05$ for effect size of 2, and $\alpha=5 \times 10^{-5}$ for effect sizes of 4 and 6) out of 1000 replicates per scenario and model.
+For these power simulations, we use different effect sizes in figures ($C=2,4,6$). Columns refer to the conditional recurrence risk ratio $\lambda=2,4,8$, and rows refer to disease prevalences $0.01,0.05$ . We present the scenario where family history involves parents only, no siblings, and we compare the empirical power for sample sizes of $N=400,750,1000,1500$ subjects per group. Our method (ordinal GAMuT) outperformed the burden test [@Li2008] and SKAT [@Wu2011], with power increasing as sample size increases and as rare variant effect size increase.
 
 
 ```{r, include=FALSE}
@@ -453,9 +467,11 @@ grid.arrange(p11,p22,p33,leg,ncol=2)
 
 We applied our method to a Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS [@Leslie2016], [@Leslie2016b] with 1,411 Caucasian subjects (267 cases with family history, 309 cases without family history and 835 controls) and 61,671 variants used for annotation with Bystro [@Kotlar2018]. 
 We filtered rare variants with MAF $[0.001,0.05]$, and filtered genes to having minimum 4 rare variants, which resulted in 5,137 gene tests. 
-We tested the association between the 5,137 genes and cleft lip or cleft lip+palate status, adjusting for select covariates and PCs for population structure. 
-We compared our results (ordinal GAMuT) with burden test and SKAT approach. 
-All three methods do not show any p-value inflation (Fig. \@ref(fig:cleft-qq)).
+We tested the association between the 5,137 genes and CL or CL/P status, adjusting for PCs for population structure. We compared our results (ordinal GAMuT) with burden test and SKAT approach. 
+Neither of the methods show any p-value inflation (Fig. \@ref(fig:cleft-qq)).
+
+None of the methods identified any genes significantly associated with CL/P. However, ordinal GAMuT 
+identified one gene (GRHL2) on chromosome 8 that passes the suggestive significance threshold (Fig. \@ref(fig:cleft-manhattan)). GRHL2 is in the same gene family as GRHL3, which is a transcription factor that is mutated in syndromic forms of clefting and is associated with nonsyndromic clefting [@Leslie2016], [@Leslie2016b], [@Carpinelli2017], [@PeyrardJanvid2014].
 
 
 ```{r, include=FALSE}
@@ -480,9 +496,9 @@ knitr::include_graphics(c('figures/cleft-burden-qq.png','figures/cleft-skat-qq.p
 ```
 -->
 
-Our novel method identified a gene (GRHL2, containing 4 SNPs in our data) on chromosome 8 that passes the suggestive significance threshold (Fig. \@ref(fig:cleft-manhattan)).
 
-```{r cleft-manhattan, fig.width=12, fig.height=4, fig.cap='Gene-based test on Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS using burden, SKAT and ordinal GAMuT approach. Manhattan plots for each of the three tests. Red line: genome-wide significance level ($-\\log_{10}(0.05/5137) = 5.0117$). Blue line: suggestive level ($-\\log_{10}(1e-04) = 4$).',fig.show='hold'}
+
+```{r cleft-manhattan, fig.width=12, fig.height=4, fig.cap='Gene-based test on Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS using burden, SKAT and ordinal GAMuT approach. Manhattan plots for each of the three tests. Red line: genome-wide significance level ($-\\log_{10}(0.05/5137) = 5.0117$). Blue line: suggestive level ($-\\log_{10}(1 \\times 10 ^{-4}) = 4$).',fig.show='hold'}
 layout(matrix(c(1,2,3),nrow=1))
 manhattan(res_with_loc, chr = "chr", bp = "bp", p = "p.gamut",snp="gene",
   col = c("blue4", "orange3"), chrlabs = NULL, annotatePval = 1e-3,
@@ -505,9 +521,9 @@ knitr::include_graphics(c('figures/cleft-burden.png','figures/cleft-skat.png','f
 
 ### Replication analysis
 
-Using a separate dataset, we tried to replicate the top genetic associations for cleft status. The replication dataset only included the region 8q22.3 (hg19 chr8:$101,600,001-106,200,000$) and 845 individuals. SNPs with SNP call rate less than $0.95$ were excluded as well as samples with sample call rate less than $0.95$. For this dataset, we do not have family history information (and thus, we cannot fit the ordinal GAMuT method here proposed), and we do not have an ordinal response. Instead, the phenotype used was case-control status on any type of clefting.
+Using the dataset in @Mostowska2018, we tried to replicate the top genetic associations for CL/P status. As mentioned already, the replication dataset only included the region 8q22.3 (hg19 chr8:$101,600,001-106,200,000$) and 845 individuals (570 were controls and 275 were affected with nsCL/P). SNPs with SNP call rate less than $0.95$ were excluded as well as samples with sample call rate less than $0.95$. For this dataset, we do not have family history information (and thus, we cannot fit the ordinal GAMuT method here proposed). Instead, the phenotype used was case-control status on CL/P.
 
-We first ran a standard GWAS analysis with plink for the common variants ($MAF>0.05$), but none of the common variants were identified as significantly associated with the phenotypes. The variant `rs965660` was the top hit, with adjusted p-value of $0.064419$ (at significance level of 5%). We used the methodology in @Conneely2007 to adjust the p-values of correlated tests. The unadjusted p-values are shown in figure \@ref(fig:qqplot-repl).
+We first ran a standard GWAS analysis with plink for the common variants ($MAF>0.05$) under the dominant model, but none of the common variants were identified as significantly associated with CL/P affected status. The variant `rs965660` was the top hit, with adjusted p-value of $0.064419$ (at significance level of $5\%$). We used the methodology in @Conneely2007 to adjust the p-values of correlated tests. The Q-Q plot of the unadjusted p-values is shown in figure \@ref(fig:qqplot-repl).
 
 ```{r qqplot-repl, fig.width=3, fig.height=3, fig.cap='Q-Q plots of p-values for association tests of common variants for the replication dataset. The variants belong to the region in chromosome 8 where the ordinal GAMuT top genes were found.',fig.show='hold'}
 dat = read.table("../replication/data/data_us/plink-sex.assoc.logistic", header=TRUE)
@@ -515,12 +531,12 @@ dat2 = subset(dat,TEST=="ADD") ##removing pvalues for SEX
 qq(dat2$P)
 ```
 
-Regarding the gene-based tests for rare variants, we fit the burden test [@Li2008] and the SKAT test [@Wu2011] on 136 annotated variants with Bystro [@Kotlar2018]. We used variants with MAF between 0.1% and 5%, which were annotated in 8 genes.
-None of these gene were found genome-wide significant, but YWHAZ, NCALD and RIMS2 were above the suggestive significance threshold (see figure \@ref(fig:repl-manhattan)). However, the p-values appear to be inflated (see figure \@ref(fig:repl-qq)). The confidence intervals are wide because there are only 8 genes (small number of tests).
+Regarding the gene-based tests for rare variants, we fit the burden test [@Li2008] and the SKAT test [@Wu2011] on 136 annotated variants with Bystro [@Kotlar2018]. We used variants with MAF between $0.1\%$ and $5\%$, which were annotated in 8 genes.
+None of these genes were found to be genome-wide significant, but YWHAZ, NCALD and RIMS2 were above the suggestive significance threshold (see figure \@ref(fig:repl-manhattan)). However, the p-values appear to be inflated (see figure \@ref(fig:repl-qq)). The confidence intervals are wide because there are only 8 genes (small number of tests).
 Unfortunately, we do not have access to principal components, or resources to estimate them this for this dataset.
 
 
-``````{r repl-manhattan, fig.width=8, fig.height=4, fig.cap='Gene-based test on xxx dataset using burden, and SKAT approach. Manhattan plots for each of the two tests. Red line: genome-wide significance level ($-\\log_{10}(0.05/8) = 2.20412$). Blue line: suggestive level ($-\\log_{10}(0.05) = 1.301$).',fig.show='hold'}
+``````{r repl-manhattan, fig.width=8, fig.height=4, fig.cap='Gene-based test on the replication dataset [@Mostowska2018] using burden, and SKAT approach. Manhattan plots for each of the two tests. Red line: genome-wide significance level ($-\\log_{10}(0.05/8) = 2.20412$). Blue line: suggestive level ($-\\log_{10}(0.05) = 1.301$).',fig.show='hold'}
 load("../replication/data/data_us/by_gene/res_with_loc.Rda")
 colnames(res_with_loc) <- c("gene","p.burden","p.skat","chr","bp")
 
@@ -550,23 +566,24 @@ qqunif.plot(res_with_loc$p.burden, main = "Burden")
 
 # Discussion
 
+We introduced an extension to the GAMuT method [@Broadaway2016] to incorporate family information to enhance case-control association studies. This approach converts the usual binary phenotype of case-control status into an ordinal phenotype with three levels: cases with family history, cases without family history and controls, and it allows to adjust for covariates. Just as the standard GAMuT test, the ordinal GAMuT obtains analytic p-values from Davies' method [@Davies1980] which is computationally efficient, allowing the analysis of datasets in the genomic scale.
+
 Simulation studies of rare variant sets showed that our ordinal GAMuT method is more powerful compared to usual gene-based tests like burden test [@Li2008] and SKAT [@Wu2011]. 
-Applying our method to Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS [@Leslie2016], [@Leslie2016b], we identified a gene (GRHL2) (not previously reported) to associate with cleft lip and palate phenotypes. 
+Applying our method to Pittsburgh Orofacial Cleft Multiethnic GWAS [@Leslie2016], [@Leslie2016b], we identified a gene (GRHL2) (not previously reported) to suggestively associate with cleft lip and palate phenotypes. 
 GRHL2 is in the same gene family as GRHL3, which is a transcription factor that is mutated in syndromic forms of clefting and is associated with nonsyndromic clefting [@Leslie2016], [@Leslie2016b], [@Carpinelli2017], [@PeyrardJanvid2014].
-Burden and SKAT on these same phenotypes (Fig. 4) failed to identify any significant or suggestive genes.
+Burden and SKAT on these same phenotypes (figure \@ref(fig:cleft-manhattan)) failed to identify any significant or suggestive genes.
 
-Potential options for enhanced outcome variables include ordinal
-categorical variables and conditional means from liability-threshold
-models.
+The extension of GAMuT to include family history information could lead to future lines of work. In particular, potential options for enhanced outcome variables could involve conditional means from liability-threshold models.
 
-<!--
-\begin{footnotesize}
-\noindent \textbf{Acknowledgements} Samples provided by Kaare Christensen (University of Southern Denmark), Frederic W.B. Deleyiannis (University of Colorado School of Medicine, Denver), Jacqueline T. Hecht (McGovern Medical School and School of Dentistry UT Health at Houston), George L. Wehby (University of Iowa), Seth M. Weinberg (University of Pittsburgh), Jeffrey C. Murray (University of Iowa) and Mary L. Marazita (University of Pittsburgh).
+See section of Web Resources for the R scripts to run ordinal GAMuT.
+
+
+
+**Acknowledgements:** Samples provided by Kaare Christensen (University of Southern Denmark), Frederic W.B. Deleyiannis (University of Colorado School of Medicine, Denver), Jacqueline T. Hecht (McGovern Medical School and School of Dentistry UT Health at Houston), George L. Wehby (University of Iowa), Seth M. Weinberg (University of Pittsburgh), Jeffrey C. Murray (University of Iowa) and Mary L. Marazita (University of Pittsburgh).
 This work was supported by NIH grants GM117946 [MP,DG], HG007508 [MP], R00-DE025060 [EJL], X01-HG007485 [MLM], R01-DE016148 [MLM, SMW], U01-DE024425 [MLM], R37-DE008559 [JCM, MLM], R21-DE016930 [MLM], R01-DE012472 [MLM], R01-DE011931 [JTH], R01-DE011948 [KC], U01-DD000295 [GLW]; NIH contract to the Johns Hopkins Center for Inherited Disease Research: HHSN268201200008I.
-\end{footnotesize}
--->
 
 
+**Web Resources: ** The URLs for software: \url{https://github.com/crsl4/ordinal-gamut} and \url{http://www.genetics.emory.edu/labs/epstein/software}.
 
 
 <!--
