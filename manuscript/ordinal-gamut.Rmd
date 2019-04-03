@@ -34,7 +34,7 @@ library(egg)
 phenotype. However, both theoretical and experimental studies have
 demonstrated that cases with a family history of disease can be
 enriched for risk variation relative to sporadic cases. 
-Assuming family-history information is available, this observation
+Assuming family history information is available, this observation
 motivates the idea of replacing the standard dichotomous outcome
 variable in case-control studies with a more informative outcome
 variable that distinguishes cases with and without family history, and
@@ -50,14 +50,15 @@ Here, we expand on our previous GAMuT framework for rare-variant association tes
 Case-control association studies are among the most influential methods to identify genetic variants that are associated with a specific disease. In these studies, individuals with the disease (cases) and individuals without the disease (controls) are genotyped, and the causal effects of each genetic variant are estimated as a function of the difference in allele frequency between cases and controls, after accounting for potential confounders.
 Alternatively, cohort studies include individuals who were sampled from the population of interest. Multiple genotypes and phenotypes are collected on these individuals.
 
-While case-control studies are limited by the difficulty of matching cases and controls, cohort studies might not include a sufficiently large sample of cases. This is evident, for example, in diseases with very low prevalence, or in cohorts that do not include the specific demographic group with highest disease prevalence. Thus, achieving a sufficient sample size of cases is challenging for both cases-control studies and cohort studies.
-In case-control studies, collecting cases can be expensive and time-consuming, while in cohort studies, it can be complicated by disease prevalence and sampling scheme.
-
 @Liu2017 showed that in some association studies it can be helpful to identify family members of cases, and that even replacing cases with first-degree relatives can allow genome-wide association studies of diseases that are not present in the cohort.
-In short, they propose a study design in which family members of cases are identified, instead of cases directly (GWAX: genome-wide association study by proxy). In GWAX, proxy cases are defined as the family members of affected individuals and controls are defined as the family members of unaffected individuals.
+In short, they propose a study design in which family members of cases are identified, instead of cases directly (GWAX: genome-wide association study by proxy). In GWAX, proxy cases are defined as the family members of affected individuals and controls are defined as the family members of unaffected individuals. This approach was proven to be powerful in genetic studies of complex traits, especially in large population cohorts.
 
-Here, we extend the idea in @Liu2017 by incorporating information of family members in existing cases and controls. That is, while the disease status in GWAX has two categories, proxy-cases and controls, we extend the disease status to four categories: cases with family history, cases without family history, controls with family history and controls without family history.
-Furthermore, we allow for the study of multiple phenotypes simulatenously by extending GAMuT [@Broadaway2016]. We denote our proposed methodology "Ordinal GAMuT".
+The idea to incorporate family history information to genetic association studies can be indeed extended beyond the work of @Liu2017. 
+Even in datasets what have enough sample size of cases, and thus, there is less need to define proxy-cases, incorporating family history can only improve the power to detect genetic associations with the disease by explictly accounting for enriched causal variation which is present in cases with family history of the disease.
+
+Here, we modify the idea in @Liu2017 by distinguishing cases with family history and cases without. That is, while the disease status in GWAX has three categories: cases, proxy-cases (controls with family history) and controls; we differentiate instead between cases with family history, cases without family history, and controls. Our method can easily be extended to the case of four categories: cases with family history, cases without family history, controls with family history and controls without family history.
+Furthermore, we allow for the study of multiple phenotypes simulatenously by extending GAMuT [@Broadaway2016] to the newly defined categorial response. We denote our proposed methodology "Ordinal GAMuT".
+Family history information will enrich for causal variation, and our approach is not restricted to a specific set of categories. Our approach can be modified to only distinguish controls with family history (proxy-cases) and without, like GWAX, or to distinguish cases with family history and without. In the present work, we focus on the later to illustrate the power gains obtained from enrichment in causal variation.
 
 Aside from allowing for an arbitrary number of genotypes and phenotypes, ordinal GAMuT can correct for confounding covariates
 such as population stratification. Just as the standard GAMuT, the new ordinal GAMuT has analytical p-values,
@@ -65,7 +66,7 @@ which are scalable to genome-wide analyses.
 
 The structure of this paper is as follows: after introducting the ordinal GAMuT method using the kernel-distance covariance framework (KDC)
 [@Gretton2008, @Szekely2007, @Kosorok2009, @Zhang2012,  @Hua2015], we present simulation work to 
-show that leveraging family-history information via
+show that leveraging family history information via
 ordinal categorical variables can greatly improve power in
 rare-variant association tests compared to standard dichotomous
 modeling of disease phenotypes that ignore such information, like the burden test [@Li2008] and SKAT [@Wu2011].
@@ -121,7 +122,7 @@ First, we assume for simplicity that we only have one phenotype in our dataset (
 so that 
 $\mathbf{P}$ is an $N$-dimensional vector with disease binary 
 status for $N$ subjects. That is, $\mathbf{P}_j=0$ if subject $j$ is a control, 
-and $\mathbf{P}_j=1$ if subject $j$ is a case. Assuming that family-history 
+and $\mathbf{P}_j=1$ if subject $j$ is a case. Assuming that family history 
 information is available, 
 we can transform the binary phenotype into an 
 ordinal phenotype by defining the ordinal score as $\mathbf{\tilde{P}}_j$ = $0$ 
@@ -138,12 +139,12 @@ between these two matrices [@Broadaway2016].
 
 ## Adjusting for covariates
 After transforming the binary phenotype to ordinal phenotype by incorporating 
-the family-history information, we account for other covariates by regressing the phenotypes on covariates 
+the family history information, we account for other covariates by regressing the phenotypes on covariates 
 with a 
 cumulative-logit regression model, and using the residuals to construct the phenotypic similarity matrix $\mathbf{Y}$.
-Let $Y$ be an ordinal response with $M$ levels, and let $P(Y\leq j)$ be 
+To illustrate this procedure, let $Y$ be an ordinal response with $M$ categories, and let $P(Y\leq j)$ be 
 the cumulative probabilities for $j=1, \dots, M$.
-The proportional odds model [@McCullagh1989] is defined as
+The proportional odds model [@McCullagh1989] is a subclass of cumulative-logit regression models and it is defined as
 $$
 \logit P(Y \leq j | \mathbf{x}) = \theta_j - \mathbf{\beta}^T\mathbf{x} 
 $$
@@ -180,7 +181,7 @@ Finally, a slight modification of the ordinal regression model is the use of qua
 
 We conducted simulations to show that ordinal GAMuT properly preserves the type I error 
 and to assess the power of ordinal GAMuT relative to 
-standard case-control burden [@Li2008] and SKAT [@Wu2011] tests that do not account for family-history information.
+standard case-control burden [@Li2008] and SKAT [@Wu2011] tests that do not account for family history information.
 
 For the genetic data, we simulated 10,000 haplotypes of 10 kb in size using COSI [@cosi], 
 a coalescent model that accounts for linkage disequilibrium (LD) pattern, local recombination rate, and population 
