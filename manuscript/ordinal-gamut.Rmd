@@ -54,17 +54,17 @@ Alternatively, cohort studies include individuals who were sampled from the popu
 In short, they propose a study design in which family members of cases are identified, instead of cases directly (GWAX: genome-wide association study by proxy). In GWAX, proxy cases are defined as the family members of affected individuals and controls are defined as the family members of unaffected individuals. This approach was proven to be powerful in genetic studies of complex traits, especially in large population cohorts.
 
 The idea to incorporate family history information to genetic association studies can be indeed extended beyond the work of @Liu2017. 
-Even in datasets what have enough sample size of cases, and thus, there is less need to define proxy-cases, incorporating family history can only improve the power to detect genetic associations with the disease by explictly accounting for enriched causal variation which is present in cases with family history of the disease.
+Even in datasets that have enough sample size of cases, and thus, there is less need to define proxy-cases, incorporating family history can only improve the power to detect genetic associations with the disease by explictly accounting for enriched causal variation which is present in cases with family history of the disease.
 
 Here, we modify the idea in @Liu2017 by distinguishing cases with family history and cases without. That is, while the disease status in GWAX has three categories: cases, proxy-cases (controls with family history) and controls; we differentiate instead between cases with family history, cases without family history, and controls. Our method can easily be extended to the case of four categories: cases with family history, cases without family history, controls with family history and controls without family history.
-Furthermore, we allow for the study of multiple phenotypes simulatenously by extending GAMuT [@Broadaway2016] to the newly defined categorial response. We denote our proposed methodology "Ordinal GAMuT".
+Furthermore, we allow for the study of multiple phenotypes simulatenously by extending GAMuT [@Broadaway2016] to the newly defined categorical response. We denote our proposed methodology "Ordinal GAMuT".
 Family history information will enrich for causal variation, and our approach is not restricted to a specific set of categories. Our approach can be modified to only distinguish controls with family history (proxy-cases) and without, like GWAX, or to distinguish cases with family history and without. In the present work, we focus on the later to illustrate the power gains obtained from enrichment in causal variation.
 
 Aside from allowing for an arbitrary number of genotypes and phenotypes, ordinal GAMuT can correct for confounding covariates
 such as population stratification. Just as the standard GAMuT, the new ordinal GAMuT has analytical p-values,
 which are scalable to genome-wide analyses.
 
-The structure of this paper is as follows: after introducting the ordinal GAMuT method using the kernel-distance covariance framework (KDC)
+The structure of this paper is as follows: after introducing the ordinal GAMuT method using the kernel-distance covariance framework (KDC)
 [@Gretton2008, @Szekely2007, @Kosorok2009, @Zhang2012,  @Hua2015], we present simulation work to 
 show that leveraging family history information via
 ordinal categorical variables can greatly improve power in
@@ -116,7 +116,7 @@ $T_{GAMuT}$ follows the asymptotic distribution as the weighted
 sum of independent and identically distributed $\chi^2_{(1)}$ variables [@Broadaway2016]. 
 We then use Davies’ method [@Davies1980] to analytically calculate the p-value of $T_{GAMuT}$.
 
-## Leveraging Family Information through Ordinal phenotype
+## Leveraging Family Information through Ordinal Phenotype
 
 First, we assume for simplicity that we only have one phenotype in our dataset ($L=1$), 
 so that 
@@ -137,7 +137,7 @@ phenotypes ($\mathbf{Y}_c$) and a centered similarity matrix for the genotypes
 between these two matrices [@Broadaway2016].
 
 
-## Adjusting for covariates
+## Adjusting for Covariates
 After transforming the binary phenotype to ordinal phenotype by incorporating 
 the family history information, we account for other covariates by regressing the phenotypes on covariates 
 with a 
@@ -151,8 +151,8 @@ $$
 for $j=1,\dots,M-1$. Note that the negative sign is a convention to guarantee 
 that large values of $\mathbf{\beta}^T\mathbf{x}$ increase the probability in the 
 larger categories. In addition, the vector of intercepts 
-$\theta = (\theta_1,\dots,\theta_M-1)$ should satisfy 
-$\theta_1 \leq \theta_2 \leq \dots \leq \theta_M-1$.
+$\theta = (\theta_1,\dots,\theta_{M-1})$ should satisfy 
+$\theta_1 \leq \theta_2 \leq \dots \leq \theta_{M-1}$.
 
 This model is denoted proportional odds because the ratio of the 
 odds of $P(Y\leq j|\mathbf{x}_1)$ and $P(Y\leq j|\mathbf{x}_2)$ do not 
@@ -163,7 +163,8 @@ $$
 $$
 This is also denoted a \textit{parallelism assumption} on $\mathbf{\beta}$ [@Yee2010].
 
-Note that for an ordinal response with $j$ categories, we fit $j-1$ proportional odds models. Thus, in our particular setting, we have three categories: controls ($j=0$), cases without family history ($j=1$) and cases with family history ($j=2$), and thus, we will fit 2 proportional odds models. Each of these models will produce a set of scalar residuals, which will be then combined into a two-dimensional vector residuals, one per model. Thus, the residuals of the proportional odds model are then inputted into the GAMuT framework as the multiple phenotypes. These residuals are not influenced by the confounding covariates anymore, and thus, can be directly tested for association with the genotypes.
+Note that for an ordinal response with $j$ categories, we fit $j-1$ proportional odds models. Thus, in our particular setting, we have three categories: controls ($j=0$), cases without family history ($j=1$) and cases with family history ($j=2$), and thus, we will fit 2 proportional odds models. 
+With these models, we will estimate the multinomial probabilities, which will be combined into a three-dimensional vector to be then inputted into the GAMuT framework as the multiple phenotypes. 
 
 
 <!--
@@ -185,9 +186,9 @@ standard case-control burden [@Li2008] and SKAT [@Wu2011] tests that do not acco
 
 For the genetic data, we simulated 10,000 haplotypes of 10 kb in size using COSI [@cosi], 
 a coalescent model that accounts for linkage disequilibrium (LD) pattern, local recombination rate, and population 
-history for individuals of European descent. We defined rare variants as those with $MAF<3\%$. 
+history for individuals of European descent. We defined rare variants as those with $MAF \leq 3\%$. 
 For the power simulations, we assumed the proportion of causal variants to be $15\%$, 
-with effect size for each causal variant given by $C|\log_{10}(MAF)|$, where we varied as $C=4,6$. This setup defines the 
+with effect size for each causal variant given by $\frac{\log(C)}{4}|\log_{10}(MAF)|$ plus a Normal noise with mean $0$ and variance $0.1$. We varied $C=4,6$. This setup defines the 
 effect size of any given causal variant as inversely proportional to its MAF, which implies
 that very rare variants will have a larger effect size.
 
@@ -197,8 +198,8 @@ members’ probability of disease depended on the sequence data and the conditio
 recurrence risk ratio ($\lambda=2,4,8$) [@Epstein2015]. If the proband was unaffected, 
 we defined the person as a control. For family history, we simulated three different scenarios: 1) parents as family members, 
 2) one sibling as family member, or 3) two siblings as family members. If the proband was affected, we defined the person 
-as case without family history if one or more family members were unaffected or a case with family 
-history if family members were affected. For the type I error and power simulation, we solely present the results corresponding to the simulations involving parents as family members. For the illustration of the enrichment of causal variants in cases with family history, we show simulations involving one or two siblings.
+as case without family history if all family members were unaffected or a case with family 
+history if one or more family members were affected. For the type I error and power simulation, we solely present the results corresponding to the simulations involving parents as family members. For the illustration of the enrichment of causal variants in cases with family history, we show simulations involving one or two siblings.
 For each simulated dataset, we generated an equal number of controls, cases without family history, and cases with family history. We varied this number among $N=400, 750, 1000, 1500$. 
 
 For each simulated dataset, we applied our ordinal GAMuT method that modeled cases with and without family history separately. We also applied standard burden and SKAT tests that combined all cases together without regards to family history information. For each method, we weighted rare variants using the weighting scheme recommended by @Wu2011; $w_v=Beta(MAF_v,1,25)/Beta(0,1,25)$. 
@@ -237,7 +238,7 @@ We performed standard data cleaning and quality control (see @Leslie2016). We ke
 
 The final sample consisted of 1411 individuals, among which there were 835 controls, 309 cases without family history and 267 cases with family history. We did not include any covariates except for the 5 PCs (see @Leslie2016 for the details on the PCA).
 We applied ordinal GAMuT using linear kernel to measure pairwise phenotypic similarity.
-We also ran SKAT and burden tests. For GAMuT and SKAT tests, we used a weighted linear kernel (with the weighting scheme in @Wu2011) to measure pairwise genotypic similarity.
+We also ran SKAT and burden tests, with the typical weights defined in @Wu2011. For GAMuT, we used a weighted linear kernel (with the weighting scheme in @Wu2011) to measure pairwise genotypic similarity.
 
 <!--
 ### Replication sample
@@ -248,7 +249,7 @@ The replication analysis involved 845 patients, among which 570 were controls an
 
 # Results
 
-## Enrichment of causal variants
+## Enrichment of Causal Variants
 
 In Figure \@ref(fig:causalvar), we show that, as expected, the average number of causal rare variants and the average probability of disease is greater for the cases with family history, followed by cases without family history, and lastly for controls. This simulated dataset comprises of 1000 controls, 1000 cases without family history, and 1000 cases with family history for three levels of conditional recurrence risk ratios (columns: $\lambda=2,4,8$) and 1 or 2 siblings as family history (rows). The effect size was set as $C=2$.
 
@@ -330,16 +331,16 @@ grid.arrange(p1,p2noleg,leg,ncol=3,widths=c(4,4,1))
 
 ## Type I Error Simulations
 
-Figure \@ref(fig:qq) shows the quantile-quantile (QQ) plots of 10,000 null simulations with 750 subjects per group (2250 in total), target disease prevalence of $0.01$, and $\lambda=2$ (other simulation designs showed similar results and are listed in the Supplement Material). We show the comparison with ordinal GAMuT, SKAT and burden test. All methods compared properly control the type I error.
+Figure \@ref(fig:qq) shows the quantile-quantile (QQ) plots of 10,000 null simulations with different subjects per group, target disease prevalence, and $\lambda$ values. We show the comparison with ordinal GAMuT, SKAT and burden test. All methods compared properly control the type I error.
 
 
-```{r qq, out.width='80%', fig.cap='Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test, SKAT, and the ordinal GAMuT here proposed. Simulated datasets (100,000) assumed a 10kb region and rare variants defined as those with MAF <3\\%. \\textbf{Top:} 750 subjects per group,  disease prevalence of 0.01 and $\\lambda=2$. \\textbf{Middle Top:} 750 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Middle Bottom:} 1000 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Bottom:} 750 subjects per group, disease prevalence of 0.01 and $\\lambda=4$.',fig.show='hold', fig.align='center'}
-knitr::include_graphics(c('figures/scenario1.png','figures/scenario3.png','figures/scenario4.png','figures/scenario5.png'))
+```{r qq, out.width='80%', fig.cap='Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test, SKAT, and the ordinal GAMuT here proposed. Simulated datasets (10,000) assumed a 10kb region and rare variants defined as those with MAF <3\\%. \\textbf{Top:} 750 subjects per group,  disease prevalence of 0.01 and $\\lambda=2$. \\textbf{Middle Top:} 750 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Middle Bottom:} 1000 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Bottom:} 750 subjects per group, disease prevalence of 0.01 and $\\lambda=4$.',fig.show='hold', fig.align='center'}
+knitr::include_graphics(c('figures/scenario1.png','figures/scenario3-2.png','figures/scenario4.png','figures/scenario5.png'))
 ```
 
 ## Power Simulations
 
-Now, we compare the power of ordinal GAMuT with SKAT and burden test (figure \@ref(fig:power-plot)). The power was estimated by computing the proportion of p-values less than the significance level ($\alpha=5 \times 10^{-5}$ for effect sizes of 4 and 6) out of 1000 replicates per scenario and model.
+Now, we compare the power of ordinal GAMuT with SKAT and burden test (Figure \@ref(fig:power-plot)). The power was estimated by computing the proportion of p-values less than the significance level ($\alpha=5 \times 10^{-5}$ for effect sizes of 4 and 6) out of 1000 replicates per scenario and model.
 For these power simulations, we use different effect sizes in figures ($C=4,6$). Columns refer to the conditional recurrence risk ratio $\lambda=2,4,8$, and rows refer to disease prevalences $0.01,0.05$ . We present the scenario where family history involves parents only, no siblings, and we compare the empirical power for sample sizes of $N=400,750,1000,1500$ subjects per group. Our method (ordinal GAMuT) outperformed the burden test [@Li2008] and SKAT [@Wu2011], with power increasing as all simulation parameters (sample size, disease prevalence, recurrence risk, effect size) increased. 
 Our method is more powerful given that other methods merge two clearly distinct groups: cases with and without family history, and thus, they cannot exploit the information present in the enrichment of causal variants in the cases with family history. Our ordinal approach models reality better by explicitly separating these two groups that have distinct genetic characteristics.
 
@@ -457,7 +458,7 @@ p3no.leg = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color=
 ```
 
 
-```{r power-plot,fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (red), SKAT (green) and ordinal GAMuT (blue). We compared two disease prevalences 0.01, 0.05 (rows), different conditional recurrence risk ratio $\\lambda=2,4,8$ (columns).', fig.height=8, fig.width=7}
+```{r power-plot,fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (blue), SKAT (green) and ordinal GAMuT (red). We compared two disease prevalences 0.01, 0.05 (rows), different conditional recurrence risk ratio $\\lambda=2,4,8$ (columns).', fig.height=8, fig.width=7}
 ##p1
 ##p2
 ##p3
