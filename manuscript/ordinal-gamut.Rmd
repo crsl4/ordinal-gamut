@@ -8,6 +8,7 @@ output:
      citation_package: natbib
 header-includes:
 - \DeclareMathOperator{\logit}{logit}
+- \DeclareMathOperator{\trace}{trace}
 - \usepackage[dvipsnames]{xcolor}
 - \newcommand{\missing}[1]{\textcolor{red}{\textbf{#1}}}
 - \usepackage{setspace}\doublespacing
@@ -42,10 +43,10 @@ $^3$ Department of Biostatistics and Informatics, University of Colorado-Denver,
 
 \begin{tabular}{l}
 Address for correspondence:\\[-0.25cm]
-Michael Epstein\\[-0.25cm]
+Dr. Michael Epstein\\[-0.25cm]
 Department of Human Genetics\\[-0.25cm]
 Emory University, School of medicine,\\[-0.25cm]
-Atlanta, GA, 30050\\[-0.25cm]
+Atlanta, GA, 30030\\[-0.25cm]
 Email: mpepste@emory.edu\\[-0.25cm]
 Phone: (404) 712-8289
 \end{tabular}
@@ -62,37 +63,25 @@ demonstrated that subjects with a family history of disease can be
 enriched for risk variation relative to subjects without such history. 
 Assuming family history information is available, this observation
 motivates the idea of replacing the standard dichotomous outcome
-variable in case-control studies with a more informative ordinal outcome
-variable that distinguishes controls ($0$), sporadic cases ($1$), and cases with a family history ($2$), and thereby leverages the trend that we should observe increasing number of risk variants with increasing category of the ordinal variable.
-Here, we expand on our previous GAMuT framework [@Broadaway2016] for rare-variant association testing of multivariate phenotypes to consider ordinal traits that incorporate family history information into disease status. We use simulated data to show that, when family history information is available, our new method outperforms standard rare-variant association methods that ignore family history. We further illustrate our method using a rare-variant study of cleft lip and palate.
+variable used in case-control studies with a more informative ordinal outcome
+variable that distinguishes controls ($0$), sporadic cases ($1$), and cases with a family history ($2$), with the expectation that we should observe increasing number of risk variants with increasing category of the ordinal variable. To leverage this expectation, we propose a novel rare-variant association test that incorporates family history information based on our previous GAMuT framework [@Broadaway2016] for rare-variant association testing of multivariate phenotypes. We use simulated data to show that, when family history information is available, our new method outperforms standard rare-variant association methods like burden and SKAT tests that ignore family history. We further illustrate our method using a rare-variant study of cleft lip and palate.
 
 \pagebreak
 
 # Introduction
+Sequencing and exome-chip technologies facilitate the discovery of rare genetic variation influencing complex diseases. Many rare-variant association studies of complex diseases now exist with most studies employing traditional case-control sampling designs for analysis \missing{(cite examples?)}. Under such a design, studies typically test whether patterns of rare variation within a gene or region of interest differ between affected and unaffected subjects using either burden [@Li2008] or variance-component [@Wu2011] approaches based on an underlying logistic-regression framework that treats disease status as a simple dichotomous outcome variable. While such an analysis strategy is commonplace, there may exist helpful secondary information collected by the study that can facilitate the creation of a modified outcome variable that is more refined than the coarse dichotomous outcome typically considered. Use of this refined outcome variable within the study can reduce heterogeneity and potentially lead to more powerful analyses.
 
-Case-control association studies are among the most influential methods to identify rare genetic variants that are associated with complex disease. In these studies, individuals with the disease (cases) and individuals without the disease (controls) are genotyped, and the causal effects of each genetic variant are estimated as a function of the difference in allele frequency between cases and controls, after accounting for potential confounders.
+One valuable source of secondary information often collected in a case-control study (but rarely utilized) is whether a sample participant reports a family history of the disease under study. Subjects with a family history of disease demonstrate different patterns of genetic variation than their sporadic counterparts. In particular, several papers have noted that a sample of cases reporting affected relatives are more enriched for a causal variant than cases without such family history [@TengRisch1999, @Zollner2012, @Epstein2015] since more risk variants tend to segregrate in families with multiple affected individuals. Likewise, controls with a family history of disease should have elevated frequency of a causal variant compared to sporadic controls [@Liu2017]. These observations suggest replacing the standard dichotomous outcome variable for disease with a more refined variable that incorporates family-history information into the coding. 
 
-These studies use two different types of technologies: 1) next-generation sequencing which allows for the inclusion of all single-nucleotide variants in the human genome, and 2) Illumina chips which  provides genotypes for different markers, primarily protein-altering variants.
-Regardless of the data technology, evidence shows that these association studies can have insufficient power due to small effect sizes, low frequency, or small sample sizes.
+In deciding how to refine the variable, we note that we should expect the frequency of a risk variant to follow a gradient that increases in frequency from sporadic controls to controls with a family history to sporadic cases to cases with a family history. One way to exploit this phenomenon in genetic analysis is to recode the disease variable as a ordinal cateogorical variable with four possible levels: controls ($0$), controls with a family history ($1$), sporadic cases ($2$), and cases with a family history ($3$). If family-history information is unavailable for controls, we instead consider a ordinal categorial variable with three possible levels: controls ($0$), sporadic cases ($1$), and cases with a family history ($2$). In either case, this recoding requires the development of novel methods for rare-variant analysis that can handle ordinal variables. To fill this gap, we propose a novel approach that is an extension of our previous GAMuT approach [@Broadaway2016], which is a nonparametric association test using a kernel-distance covariance (KDC) framework that can handle multi-dimensional genotypes and phenotypes. We show how GAMuT can model ordinal outcomes in rare-variant analysis while correcting for confounding covariates such as population stratification. Furthermore, just as the standard GAMuT, the newly proposed ordinal GAMuT produces analytical p-values, which facilitates scaling to genome-wide analyses. 
 
-@Zollner2012 showed than statistical power can be increased by amplifying the frequency difference of risk variants between cases and controls. This could be accomplish by the inclusion of family information. On one hand, cases with family history are enriched for risk variation over sporadic cases because one or more risk variants tend to be segregated in families with multiple affected individuals [@Epstein2015, @Zollner2012]. On the other hand, controls with family history are enriched over controls without family history as well [@Liu2017]. 
-
-
-Here, we extend GAMuT [@Broadaway2016], a nonparametric association test for high-dimensional phenotypes and high-dimensional genotypes by differentiating between cases with family history, and cases without family history. This distinction yields an ordinal phenotype with three levels: controls ($0$), sporadic cases ($1$), and cases with a family history ($2$).
-We denote our proposed methodology "Ordinal GAMuT".
-Family history information will enrich for causal variation, and our approach is not restricted to a specific set of categories. In fact, our method can even be extended to the case of four categories: cases with family history, cases without family history, controls with family history and controls without family history.
-
-Aside from allowing for an arbitrary number of genotypes and phenotypes, ordinal GAMuT can also correct for confounding covariates
-such as population stratification. Furthermore, just as the standard GAMuT, the newly proposed ordinal GAMuT has analytical p-values,
-which are scalable to genome-wide analyses.
-
-The structure of this paper is as follows: after introducing the ordinal GAMuT method using the kernel-distance covariance framework (KDC)
+The structure of this paper is as follows: after introducing the ordinal GAMuT method using the KDC framework
 [@Gretton2008, @Szekely2007, @Kosorok2009, @Zhang2012,  @Hua2015], we present simulation work to 
 show that leveraging family history information via
 ordinal categorical variables can greatly improve power in
 rare-variant association tests compared to standard dichotomous
 modeling of disease phenotypes that ignore such information, like the burden test [@Li2008] and SKAT [@Wu2011].
-Finally, we apply ordinal GAMuT using genetic data from a genome-wide study of craniofacial defects
+Finally, we apply ordinal GAMuT to rare and less-common variant data from a genome-wide study of craniofacial defects
 [@Leslie2016, @Leslie2016b, @Mostowska2018].
 
 # Materials and Methods
@@ -107,22 +96,64 @@ the subject possesses at the $v^{th}$ variant. Thus, the matrix of rare-variant
 genotypes for the sample is denoted $\mathbf{G} \in \mathbb{R}^{N \times V}$.
 
 Let $\mathbf{P}$ be an $N$-dimensional vector with disease binary 
-status for $N$ subjects. That is, $\mathbf{P}_j=0$ if subject $j$ is a control, 
-and $\mathbf{P}_j=1$ if subject $j$ is a case.
+status for $N$ subjects. That is, $P_j=0$ if subject $j$ is a control, 
+and $P_j=1$ if subject $j$ is a case.
 Assuming that family history 
 information is available, 
 we can transform the binary phenotype into an 
-ordinal phenotype by defining the ordinal score as $\mathbf{\tilde{P}}_j$ = $0$ 
-if the subject is a control, $\mathbf{\tilde{P}}_j =1$ if the subject is a case 
-without family history of the disease, $\mathbf{\tilde{P}}_j =2$ if the subject 
-is a case with family history of the disease. Here we will focus on the situation when there are no controls with family history in the sample. However, this ordinal approach can easily be extended to the case of four categories: controls without ($\mathbf{\tilde{P}}_j=0$) and with family history ($\mathbf{\tilde{P}}_j=1$), and cases 
-without ($\mathbf{\tilde{P}}_j=2$) and with family history ($\mathbf{\tilde{P}}_j=3$). The resulting phenotype vector $\mathbf{\tilde{P}}$ is an $N$-dimensional ordinal vector with disease binary 
+ordinal phenotype by defining the ordinal score as $\tilde{P}_j$ = $0$ 
+if the subject is a control, $\tilde{P}_j =1$ if the subject is a case 
+without family history of the disease, $\tilde{P}_j =2$ if the subject 
+is a case with family history of the disease. Here we will focus on the situation when there are no controls with family history in the sample. However, this ordinal approach can easily be extended to the case of four categories: controls without ($\tilde{P}_j=0$) and with family history ($\tilde{P}_j=1$), and cases 
+without ($\tilde{P}_j=2$) and with family history ($\tilde{P}_j=3$). The resulting phenotype vector $\tilde{P}$ is an $N$-dimensional ordinal vector with disease binary 
 status adjusted for family history for the $N$ subjects. 
 
-GAMuT tests for independence between the phenotype matrix $\mathbf{\tilde{P}}$ and $\mathbf{G}$ (the $N \times V$ matrix of multivariate 
+## Adjusting for Covariates
+
+After transforming the binary phenotype to ordinal phenotype by incorporating 
+the family history information, we can account for other covariates by regressing the phenotypes on covariates 
+with a 
+cumulative-logit regression model, and using the residuals to construct the phenotypic similarity matrix $\mathbf{Y}$.
+To illustrate this procedure, let $\tilde{P}$ be an ordinal response with $M$ categories, and let $P(\tilde{P} \leq j)$ be 
+the cumulative probabilities for $j=1, \dots, M$.
+The proportional odds model [@McCullagh1989] is a subclass of cumulative-logit regression models and it is defined as
+$$
+\logit P(\tilde{P} \leq j | \mathbf{x}) = \theta_j - \mathbf{\beta}^T\mathbf{x} 
+$$
+for $j=1,\dots,M-1$. Note that the negative sign is a convention to guarantee 
+that large values of $\mathbf{\beta}^T\mathbf{x}$ increase the probability in the 
+larger categories. In addition, the vector of intercepts 
+$\theta = (\theta_1,\dots,\theta_{M-1})$ should satisfy 
+$\theta_1 \leq \theta_2 \leq \dots \leq \theta_{M-1}$.
+
+This model is denoted proportional odds because the ratio of the 
+odds of $P(\tilde{P} \leq j|\mathbf{x}_1)$ and $P(\tilde{P} \leq j|\mathbf{x}_2)$ do not 
+depend on the specific category $j$.
+That is,
+$$
+\frac{P(\tilde{P} \leq j | \mathbf{x}_1)/(1-P(\tilde{P} \leq j | \mathbf{x}_1))}{P(\tilde{P} \leq j | \mathbf{x}_2)/(1-P(\tilde{P} \leq j | \mathbf{x}_2))} = \exp(-\mathbf{\beta}^T(\mathbf{x}_1-\mathbf{x}_2))
+$$
+This is also denoted a \textit{parallelism assumption} on $\mathbf{\beta}$ [@Yee2010].
+
+Note that for an ordinal response with $j$ categories, we fit $j-1$ proportional odds models. Thus, in our particular setting, we have three categories: controls ($j=0$), cases without family history ($j=1$) and cases with family history ($j=2$), and thus, we will fit 2 proportional odds models: $\logit P(\tilde{P} \leq 0)$ and $\logit P(\tilde{P} \leq 1)$.
+With these models, we estimate the multinomial response probabilities for each individual. That is, for individual $i$, we have:
+$$
+\mu_{i,0} = P(\tilde{P}_i=0),
+\mu_{i,1} = P(\tilde{P}_i=1),
+\mu_{i,2} = P(\tilde{P}_i=2)
+$$
+Thus, the matrix of fitted values (denoted $\mathbf{M}$) will be a $N \times 3$ matrix where each row sums to 1, and the $i^{th}$ row corresponds to the estimated multinomial probabilities for individual $i$: $(\hat{\mu}_{i,0},\hat{\mu}_{i,1},\hat{\mu}_{i,2})$. 
+To obtain the matrix of residuals, we first transform the ordinal response into a $N \times 3$ binary matrix (denoted $\mathbf{I}_{\tilde{P}}$) where the $i^{th}$ row corresponds to the 3-dimensional vector for individual $i$ with three indicator functions, one for each category: $(I(\tilde{P}_i=0), I(\tilde{P}_i=1), I(\tilde{P}_i=2))$. For example, if $\tilde{P}_i=2$, then the binary vector in the $i^{th}$ row would be $(0,0,1)$. As a result, the matrix of residuals $\mathbf{R}$ will be the $N \times 3$ matrix of the 
+difference between the binary matrix and the matrix of estimated multinomial probabilities: $\mathbf{I}_{\tilde{P}}-\mathbf{M}$.
+This matrix of residuals will then be inputted into the GAMuT framework as the multiple phenotypes as described below. 
+
+
+## GAMuT Test of Cross-Phenotype Associations
+
+GAMuT tests for independence between the phenotype matrix $\mathbf{R}$ (the $N \times 3$ matrix of phenotype residuals) and $\mathbf{G}$ (the $N \times V$ matrix of multivariate 
 rare-variant genotypes) by constructing an $N \times N$ phenotypic-similarity 
 matrix $\mathbf{Y}$, and an $N \times N$ genotypic-similarity matrix $\mathbf{X}$. 
-These similarity matrices depend on a user-selected kernel function [@Kwee2008, @Schaid2010, @Wu2010, @Wu2011]. For example, the matrix $\mathbf{Y}$ can be modeled with the projection matrix: $\mathbf{Y} = \mathbf{P} (\mathbf{P}^T\mathbf{P})^{-1}\mathbf{P}^T$. Alternatively, if $\gamma(\mathbf{P}_i,\mathbf{P}_j)$ denotes the kernel function between subjects $i$ and $j$, the linear kernel is defined as $\gamma(\mathbf{P}_i,\mathbf{P}_j)= \sum_{l=1}^L P_{i,l} P_{j,l}$.
+These similarity matrices depend on a user-selected kernel function [@Kwee2008, @Schaid2010, @Wu2010, @Wu2011]. For example, the matrix $\mathbf{Y}$ can be modeled with the projection matrix: $\mathbf{Y} = \mathbf{R} (\mathbf{R}^T\mathbf{R})^{-1}\mathbf{R}^T$. Alternatively, if $\gamma(\mathbf{R}_i,\mathbf{R}_j)$ denotes the kernel function between subjects $i$ and $j$, the linear kernel is defined as $\gamma(\mathbf{R}_i,\mathbf{R}_j)= \sum_{l=1}^L R_{i,l} R_{j,l}$.
 See @Broadaway2016 for more details on other kernel functions to model pairwise similarity or dissimilarity.
 
 After constructing the simularity matrices $\mathbf{Y}$ and $\mathbf{X}$, 
@@ -134,7 +165,7 @@ With the centered similarity matrices ($\mathbf{Y}_c, \mathbf{X}_c$), we constru
 the GAMuT test statistic as
 
 $$
-T_{GAMuT}=\frac{1}{N}trace(\mathbf{Y}_c\mathbf{X}_c).
+T_{GAMuT}=\frac{1}{N}\trace(\mathbf{Y}_c\mathbf{X}_c).
 $$
 Under the null hypothesis where the two matrices are independent, 
 $T_{GAMuT}$ follows the asymptotic distribution as the weighted 
@@ -142,43 +173,6 @@ sum of independent and identically distributed $\chi^2_{(1)}$ variables [@Broada
 We then use Davies’ method [@Davies1980] to analytically calculate the p-value of $T_{GAMuT}$.
 
 
-## Adjusting for Covariates
-After transforming the binary phenotype to ordinal phenotype by incorporating 
-the family history information, we can account for other covariates by regressing the phenotypes on covariates 
-with a 
-cumulative-logit regression model, and using the residuals to construct the phenotypic similarity matrix $\mathbf{Y}$.
-To illustrate this procedure, let $W$ be an ordinal response with $M$ categories, and let $P(W\leq j)$ be 
-the cumulative probabilities for $j=1, \dots, M$.
-The proportional odds model [@McCullagh1989] is a subclass of cumulative-logit regression models and it is defined as
-$$
-\logit P(W \leq j | \mathbf{x}) = \theta_j - \mathbf{\beta}^T\mathbf{x} 
-$$
-for $j=1,\dots,M-1$. Note that the negative sign is a convention to guarantee 
-that large values of $\mathbf{\beta}^T\mathbf{x}$ increase the probability in the 
-larger categories. In addition, the vector of intercepts 
-$\theta = (\theta_1,\dots,\theta_{M-1})$ should satisfy 
-$\theta_1 \leq \theta_2 \leq \dots \leq \theta_{M-1}$.
-
-This model is denoted proportional odds because the ratio of the 
-odds of $P(W\leq j|\mathbf{x}_1)$ and $P(W\leq j|\mathbf{x}_2)$ do not 
-depend on the specific category $j$.
-That is,
-$$
-\frac{P(W \leq j | \mathbf{x}_1)/(1-P(W \leq j | \mathbf{x}_1))}{P(W \leq j | \mathbf{x}_2)/(1-P(W \leq j | \mathbf{x}_2))} = \exp(-\mathbf{\beta}^T(\mathbf{x}_1-\mathbf{x}_2))
-$$
-This is also denoted a \textit{parallelism assumption} on $\mathbf{\beta}$ [@Yee2010].
-
-Note that for an ordinal response with $j$ categories, we fit $j-1$ proportional odds models. Thus, in our particular setting, we have three categories: controls ($j=0$), cases without family history ($j=1$) and cases with family history ($j=2$), and thus, we will fit 2 proportional odds models: $\logit P(W \leq 0)$ and $\logit P(W \leq 1)$.
-With these models, we estimate the multinomial response probabilities for each individual. That is, for individual $i$, we have:
-$$
-\mu_{i,0} = P(W_i=0),
-\mu_{i,1} = P(W_i=1),
-\mu_{i,2} = P(W_i=2)
-$$
-Thus, the matrix of fitted values (denoted $\mathbf{M}$) will be a $n \times 3$ matrix where each row sums to 1, and the $i^{th}$ row corresponds to the estimated multinomial probabilities for individual $i$: $(\hat{\mu}_{i,0},\hat{\mu}_{i,1},\hat{\mu}_{i,2})$. 
-To obtain the matrix of residuals, we first transform the ordinal response into a $n \times 3$ binary matrix (denoted $\mathbf{I}_W$) where the $i^{th}$ row corresponds to the 3-dimensional vector for individual $i$ with three indicator functions, one for each category: $(I(W_i=0), I(W_i=1), I(W_i=2))$ For example, if $W_i=2$, then the binary vector in the $i^{th}$ row would be $(0,0,1)$. As a result, the matrix of residuals will be the $n \times 3$ matrix of the 
-difference between the binary matrix and the matrix of estimated multinomial probabilities: $\mathbf{I}_W-\mathbf{M}$.
-This matrix of residuals will then be inputted into the GAMuT framework as the multiple phenotypes. 
 
 
 <!--
