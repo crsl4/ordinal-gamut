@@ -70,21 +70,20 @@ Here, we expand on our previous GAMuT framework [@Broadaway2016] for rare-varian
 
 # Introduction
 
-Case-control association studies are among the most influential methods to identify genetic variants that are associated with a specific disease. In these studies, individuals with the disease (cases) and individuals without the disease (controls) are genotyped, and the causal effects of each genetic variant are estimated as a function of the difference in allele frequency between cases and controls, after accounting for potential confounders.
-Alternatively, cohort studies include individuals who were sampled from the population of interest. Multiple genotypes and phenotypes are collected on these individuals.
+Case-control association studies are among the most influential methods to identify rare genetic variants that are associated with complex disease. In these studies, individuals with the disease (cases) and individuals without the disease (controls) are genotyped, and the causal effects of each genetic variant are estimated as a function of the difference in allele frequency between cases and controls, after accounting for potential confounders.
 
-@Liu2017 showed that in some association studies it can be helpful to identify family members of cases, and that even replacing cases with first-degree relatives can allow genome-wide association studies of diseases that are not present in the cohort.
-In short, they propose a study design in which family members of cases are identified, instead of cases directly (GWAX: genome-wide association study by proxy). In GWAX, proxy cases are defined as the family members of affected individuals and controls are defined as the family members of unaffected individuals. This approach was proven to be powerful in genetic studies of complex traits, especially in large population cohorts.
+These studies use two different types of technologies: 1) next-generation sequencing which allows for the inclusion of all single-nucleotide variants in the human genome, and 2) Illumina chips which  provides genotypes for different markers, primarily protein-altering variants.
+Regardless of the data technology, evidence shows that these association studies can have insufficient power due to small effect sizes, low frequency, or small sample sizes.
 
-The idea to incorporate family history information to genetic association studies can be indeed extended beyond the work of @Liu2017. 
-Even in datasets that have enough sample size of cases, and thus, there is less need to define proxy-cases, incorporating family history can only improve the power to detect genetic associations with the disease by explictly accounting for enriched causal variation which is present in cases with family history of the disease.
+@Zollner2012 showed than statistical power can be increased by amplifying the frequency difference of risk variants between cases and controls. This could be accomplish by the inclusion of family information. On one hand, cases with family history are enriched for risk variation over sporadic cases because one or more risk variants tend to be segregated in families with multiple affected individuals [@Epstein2015, @Zollner2012]. On the other hand, controls with family history are enriched over controls without family history as well [@Liu2017]. 
 
-Here, we modify the idea in @Liu2017 by distinguishing cases with family history and cases without. That is, while the disease status in GWAX has three categories: cases, proxy-cases (controls with family history) and controls; we differentiate instead between cases with family history, cases without family history, and controls. Our method can easily be extended to the case of four categories: cases with family history, cases without family history, controls with family history and controls without family history.
-We extend GAMuT [@Broadaway2016], a nonparametric association method for high-dimensional phenotypes and high-dimensional genotypes, to the newly defined categorical response. We denote our proposed methodology "Ordinal GAMuT".
-Family history information will enrich for causal variation, and our approach is not restricted to a specific set of categories. Our approach can be modified to only distinguish controls with family history (proxy-cases) and without, like GWAX, or to distinguish cases with family history and without. In the present work, we focus on the later to illustrate the power gains obtained from enrichment in causal variation.
 
-Aside from allowing for an arbitrary number of genotypes and phenotypes, ordinal GAMuT can correct for confounding covariates
-such as population stratification. Just as the standard GAMuT, the new ordinal GAMuT has analytical p-values,
+Here, we extend GAMuT [@Broadaway2016], a nonparametric association test for high-dimensional phenotypes and high-dimensional genotypes by differentiating between cases with family history, and cases without family history. This distinction yields an ordinal phenotype with three levels: controls ($0$), sporadic cases ($1$), and cases with a family history ($2$).
+We denote our proposed methodology "Ordinal GAMuT".
+Family history information will enrich for causal variation, and our approach is not restricted to a specific set of categories. In fact, our method can even be extended to the case of four categories: cases with family history, cases without family history, controls with family history and controls without family history.
+
+Aside from allowing for an arbitrary number of genotypes and phenotypes, ordinal GAMuT can also correct for confounding covariates
+such as population stratification. Furthermore, just as the standard GAMuT, the newly proposed ordinal GAMuT has analytical p-values,
 which are scalable to genome-wide analyses.
 
 The structure of this paper is as follows: after introducing the ordinal GAMuT method using the kernel-distance covariance framework (KDC)
