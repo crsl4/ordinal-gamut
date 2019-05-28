@@ -37,7 +37,7 @@ library(egg)
 $*$ Joint first author \\[-0.25cm]
 $^1$ Department of Human Genetics, Emory University, Atlanta, GA \\[-0.25cm]
 $^2$ Department of Biostatistics and Bioinformatics, Emory University, Atlanta, GA \\[-0.25cm]
-$^3$ Department of Biostatistics and Informatics, University of Colorado-Denver, Aurora, CO
+$^3$ Department of Biostatistics and Informatics, University of Colorado, Aurora, CO
 \end{tabular}
 
 
@@ -71,16 +71,18 @@ variable that distinguishes controls ($0$), sporadic cases ($1$), and cases with
 # Introduction
 Sequencing and exome-chip technologies facilitate the discovery of rare genetic variation influencing complex diseases. Many rare-variant association studies of complex diseases now exist with most studies employing traditional case-control sampling designs for analysis [@DeRubeis2014, @Sanders2017]. Under such a design, studies typically test whether patterns of rare variation within a gene or region of interest differ between affected and unaffected subjects using either burden [@Li2008] or variance-component [@Wu2011] approaches based on an underlying logistic-regression framework that treats disease status as a simple dichotomous outcome variable. While such an analysis strategy is commonplace, there may exist helpful secondary information collected by the study that can facilitate the creation of a modified outcome variable that is more refined than the coarse dichotomous outcome typically considered. Use of this refined outcome variable within the study can reduce heterogeneity and potentially lead to more powerful analyses.
 
-One valuable source of secondary information often collected in a case-control study (but rarely utilized) is whether a sample participant reports a family history of the disease under study. Subjects with a family history of disease demonstrate different patterns of genetic variation than their sporadic counterparts. In particular, several papers have noted that a sample of cases reporting affected relatives are more enriched for a causal variant than cases without such family history [@TengRisch1999, @Zollner2012, @Epstein2015] since more risk variants tend to segregrate in families with multiple affected individuals. Likewise, controls with a family history of disease should have elevated frequency of a causal variant compared to sporadic controls [@Liu2017]. These observations suggest replacing the standard dichotomous outcome variable for disease with a more refined variable that incorporates family-history information into the coding. 
+One valuable source of secondary information often collected in a case-control study (but rarely utilized) is whether a sample participant reports a family history of the disease under study. Subjects with a family history of disease demonstrate different patterns of genetic variation than their sporadic counterparts. In particular, several papers have noted that a sample of cases reporting affected relatives are more enriched for a causal variant than cases without such family history [@TengRisch1999, @Zollner2012, @Epstein2015] since more risk variants tend to segregrate in families with multiple affected individuals. Likewise, controls with a family history of disease should have elevated frequency of a causal variant compared to sporadic controls [@Liu2017]. These observations motivate replacement of the standard dichotomous outcome variable for disease with a more refined variable that incorporates family-history information into the coding. 
 
-In deciding how to refine the variable, we note that we should expect the frequency of a risk variant to follow a gradient that increases in frequency from sporadic controls to controls with a family history to sporadic cases to cases with a family history. One way to exploit this phenomenon in genetic analysis is to recode the disease variable as a ordinal cateogorical variable with four possible levels: controls ($0$), controls with a family history ($1$), sporadic cases ($2$), and cases with a family history ($3$). If family-history information is unavailable for controls, we instead consider a ordinal categorial variable with three possible levels: controls ($0$), sporadic cases ($1$), and cases with a family history ($2$). In either case, this recoding requires the development of novel methods for rare-variant analysis that can handle ordinal variables. To fill this gap, we propose a novel approach that is an extension of our previous GAMuT approach [@Broadaway2016], which is a nonparametric association test using a kernel-distance covariance (KDC) framework that can handle multi-dimensional genotypes and phenotypes. We show how GAMuT can model ordinal outcomes in rare-variant analysis while correcting for confounding covariates such as population stratification. Furthermore, just like the standard GAMuT, the newly proposed ordinal GAMuT produces analytical p-values, which facilitates scaling to genome-wide analyses. 
+In deciding how to refine the variable, we note that we should expect the frequency of a risk variant to follow a gradient that increases in frequency from sporadic controls to controls with a family history to sporadic cases to cases with a family history. One way to exploit this phenomenon in genetic analysis is to recode the disease variable as a ordinal cateogorical variable with four possible levels: controls ($0$), controls with a family history ($1$), sporadic cases ($2$), and cases with a family history ($3$). If family-history information is unavailable for controls, we instead consider a ordinal categorial variable with three possible levels: controls ($0$), sporadic cases ($1$), and cases with a family history ($2$). In either case, this recoding requires the development of novel methods for rare-variant analysis that can handle ordinal variables. To fill this gap, we propose a novel approach that is an extension of our previous GAMuT approach [@Broadaway2016], which is a nonparametric association test using a kernel-distance covariance (KDC) framework that can handle multi-dimensional genotypes and phenotypes. 
+Kernel-based approaches have found success in rare variant associations due to the natural incorporation of epistatic effects, and sparsity in the methodology.
+Here, we show how GAMuT can model ordinal outcomes in rare-variant analysis while correcting for confounding covariates such as population stratification. Furthermore, just like the standard GAMuT, the newly proposed ordinal GAMuT produces analytical p-values, which facilitates scaling to genome-wide analyses. 
 
 The structure of this paper is as follows: after introducing the ordinal GAMuT method using the KDC framework
 [@Gretton2008, @Szekely2007, @Kosorok2009, @Zhang2012,  @Hua2015], we present simulation work to 
 show that leveraging family history information via
-ordinal categorical variables can greatly improve power in
+ordinal categorical variables can improve power in
 rare-variant association tests compared to standard dichotomous
-modeling of disease phenotypes that ignore such information, like the burden test [@Li2008] and SKAT [@Wu2011].
+modeling of disease phenotypes that ignore such information, like the burden test [@Li2008] and Sequence Kernel Association Test (SKAT) [@Wu2011].
 Finally, we apply ordinal GAMuT to rare and less-common variant data from a genome-wide study of craniofacial defects
 [@Leslie2016, @Leslie2016b, @Mostowska2018].
 
@@ -95,57 +97,56 @@ Note that $G_{j,v}$ represents the number of copies of the minor allele that
 the subject possesses at the $v^{th}$ variant. Thus, the matrix of rare-variant 
 genotypes for the sample is denoted $\mathbf{G} \in \mathbb{R}^{N \times V}$.
 
-Let $\mathbf{P}$ be an $N$-dimensional vector with disease binary 
-status for $N$ subjects. That is, $P_j=0$ if subject $j$ is a control, 
-and $P_j=1$ if subject $j$ is a case.
-Assuming that family history 
+Let $\mathbf{Q}$ be an $N$-dimensional vector with binary disease status for $N$ subjects. That is, $Q_j=0$ if subject $j$ is a control, 
+and $Q_j=1$ if subject $j$ is a case.
+When family history 
 information is available, 
-we can transform the binary phenotype into an 
-ordinal phenotype. Assuming family history information is only available on cases, we can define the ordinal score as $\tilde{P}_j$ = $0$ 
-if the subject is a control, $\tilde{P}_j =1$ if the subject is a case 
-without family history of the disease, and $\tilde{P}_j =2$ if the subject 
-is a case with family history of the disease. If family history information is available for controls, we can modify appropriately by extending the ordinal variable to the case of four categories: controls without ($\tilde{P}_j=0$) and with family history ($\tilde{P}_j=1$), and cases 
-without ($\tilde{P}_j=2$) and with family history ($\tilde{P}_j=3$). The resulting phenotype vector $\tilde{P}$ is an $N$-dimensional ordinal vector with disease binary 
+we can instead employ a more informative 
+ordinal phenotype. Assuming family history information is only available on cases, we can define the ordinal score as $\tilde{Q}_j$ = $0$ 
+if the subject is a control, $\tilde{Q}_j =1$ if the subject is a case 
+without family history of the disease, and $\tilde{Q}_j =2$ if the subject 
+is a case with family history of the disease. If family history information is available for controls, we can modify appropriately by extending the ordinal variable to the case of four categories: controls without ($\tilde{Q}_j=0$) and with family history ($\tilde{Q}_j=1$), and cases 
+without ($\tilde{Q}_j=2$) and with family history ($\tilde{Q}_j=3$). The resulting phenotype vector $\tilde{Q}$ is an $N$-dimensional ordinal vector with disease binary 
 status adjusted for family history for the $N$ subjects. 
 
 ## Adjusting for Covariates
 
 After transforming the binary phenotype to ordinal phenotype by incorporating 
-the family history information, we can account for other covariates by regressing the phenotypes $\tilde{P}_j$ on covariates $X_j$ 
+the family history information, we can account for other covariates by regressing the phenotypes $\tilde{Q}_j$ on covariates $X_j$ 
 with a 
-cumulative-logit regression model, and use the residuals in our subsequent rare-variant association test. To illustrate the cumulative-logit regression model, let $\tilde{P}_j$ be an ordinal response with $M$ categories, and let $P(\tilde{P}_j \leq k)$ be 
+cumulative-logit regression model, and use the residuals in our subsequent rare-variant association test. To illustrate the cumulative-logit regression model, let $\tilde{Q}_j$ be an ordinal response with $M$ categories, and let $P(\tilde{Q}_j \leq k)$ be 
 the cumulative probabilities for $k=1, \dots, M$.
 The proportional odds model [@McCullagh1989] is a subclass of cumulative-logit regression models and it is defined as
 $$
-\logit P(\tilde{P}_j \leq k | \mathbf{X_j}) = \theta_k - \mathbf{\beta}^T\mathbf{X_j} 
+\logit P(\tilde{Q}_j \leq k | \mathbf{X_j}) = \theta_k - \mathbf{\beta}^T\mathbf{X_j} 
 $$
 for $k=1,\dots,M-1$. Note that the negative sign is a convention to guarantee 
 that large values of $\mathbf{\beta}^T\mathbf{X_j}$ increase the probability in the 
-larger categories. In addition, the vector of intercepts 
+larger values of $k$. In addition, the vector of intercepts 
 $\theta = (\theta_1,\dots,\theta_{M-1})$ should satisfy 
 $\theta_1 \leq \theta_2 \leq \dots \leq \theta_{M-1}$.
 
 
 This model is denoted proportional odds because the ratio of the 
-odds of $P(\tilde{P}_j \leq k|\mathbf{X_j})$ and $P(\tilde{P}_{j'} \leq k|\mathbf{X_{j'}})$ do not 
+odds of $P(\tilde{Q}_j \leq k|\mathbf{X_j})$ and $P(\tilde{Q}_{j'} \leq k|\mathbf{X_{j'}})$ do not 
 depend on the specific category $k$.
 That is,
 $$
-\frac{P(\tilde{P}_j \leq k | \mathbf{X_j})/(1-P(\tilde{P}_j \leq k | \mathbf{X_j}))}{P(\tilde{P}_{j'} \leq k | \mathbf{X_{j'}})/(1-P(\tilde{P}_{j'} \leq k | \mathbf{X_{j'}}))} = \exp(-\mathbf{\beta}^T(\mathbf{X_j}-\mathbf{X_{j'}}))
+\frac{P(\tilde{Q}_j \leq k | \mathbf{X_j})/(1-P(\tilde{Q}_j \leq k | \mathbf{X_j}))}{P(\tilde{Q}_{j'} \leq k | \mathbf{X_{j'}})/(1-P(\tilde{Q}_{j'} \leq k | \mathbf{X_{j'}}))} = \exp(-\mathbf{\beta}^T(\mathbf{X_j}-\mathbf{X_{j'}}))
 $$
 This is also denoted a \textit{parallelism assumption} on $\mathbf{\beta}$ [@Yee2010].
 
-Note that for an ordinal response with $M$ categories, we fit $M-1$ proportional odds models. Thus, in our particular setting, we have three categories: controls ($k=0$), cases without family history ($k=1$) and cases with family history ($k=2$), and thus, we will fit 2 proportional odds models: $\logit P(\tilde{P}_j \leq 0)$ and $\logit P(\tilde{P}_j \leq 1)$.
+Note that for an ordinal response with $M$ categories, we fit $M-1$ logit regression models. Thus, in our particular setting, we have three categories: controls ($k=0$), cases without family history ($k=1$) and cases with family history ($k=2$), and thus, we will fit 2 models: $\logit P(\tilde{Q}_j \leq 0)$ and $\logit P(\tilde{Q}_j \leq 1)$.
 With these models, we estimate the multinomial response probabilities for each individual. That is, for individual $j$, we have:
 $$
-\mu_{j,0} = P(\tilde{P}_j=0),
-\mu_{j,1} = P(\tilde{P}_j=1),
-\mu_{j,2} = P(\tilde{P}_j=2)
+\mu_{j,0} = P(\tilde{Q}_j=0),
+\mu_{j,1} = P(\tilde{Q}_j=1),
+\mu_{j,2} = P(\tilde{Q}_j=2)
 $$
 Thus, the matrix of fitted values (denoted $\mathbf{M}$) will be a $N \times 3$ matrix where each row sums to 1, and the $i^{th}$ row corresponds to the estimated multinomial probabilities for individual $i$: $(\hat{\mu}_{i,0},\hat{\mu}_{i,1},\hat{\mu}_{i,2})$. 
-To obtain the matrix of residuals, we first transform the ordinal response into a $N \times 3$ binary matrix (denoted $\mathbf{I}_{\tilde{P}}$) where the $i^{th}$ row corresponds to the 3-dimensional vector for individual $i$ with three indicator functions, one for each category: $(I(\tilde{P}_j=0), I(\tilde{P}_j=1), I(\tilde{P}_j=2))$. For example, if $\tilde{P}_j=2$, then the binary vector in the $j^{th}$ row would be $(0,0,1)$. As a result, the matrix of residuals $\mathbf{R}$ will be the $N \times 3$ matrix of the 
-difference between the binary matrix and the matrix of estimated multinomial probabilities: $\mathbf{I}_{\tilde{P}}-\mathbf{M}$.
-This matrix of residuals will then be inputted into the GAMuT framework to enable rare-variant association testing as described below. 
+To obtain the matrix of residuals, we first transform the ordinal response into a $N \times 3$ binary matrix (denoted $\mathbf{I}_{\tilde{Q}}$) where the $i^{th}$ row corresponds to the 3-dimensional vector for individual $i$ with three indicator functions, one for each category: $(I(\tilde{Q}_j=0), I(\tilde{Q}_j=1), I(\tilde{Q}_j=2))$. For example, if $\tilde{Q}_j=2$, then the binary vector in the $j^{th}$ row would be $(0,0,1)$. As a result, the matrix of residuals $\mathbf{R}$ will be the $N \times 3$ matrix of the 
+difference between the binary matrix and the matrix of estimated multinomial probabilities: $\mathbf{I}_{\tilde{Q}}-\mathbf{M}$.
+This matrix of residuals will then be input into the GAMuT framework to enable rare-variant association testing. The GAMuT framework allows for correlated phenotypes, and will be described in the following section. 
 
 
 ## GAMuT Test of Cross-Phenotype Associations
@@ -204,13 +205,13 @@ data and the disease prevalence, which we varied as $0.01$, or $0.05$, while the
 members’ probability of disease depended on the sequence data and the conditional 
 recurrence risk ratio ($\lambda=2,4,8$) [@Epstein2015]. If the proband was unaffected, 
 we defined the person as a control. If the proband was affected and none of the parents were affected, we defined the person 
-as case without family history. Finally, if the proband was affected and at least of the parents was affected, we defined the person as a case with family history.
+as a case without family history. Finally, if the proband was affected and at least of the parents was affected, we defined the person as a case with family history.
 
 For each simulated dataset, we generated an equal number of controls, cases without family history, and cases with family history. We varied this number among $N=400, 750, 1000, 1500$. 
 For each simulated dataset, we applied our ordinal GAMuT method that modeled cases with and without family history separately. We also applied standard burden and SKAT tests that combined all cases together without regards to family history information. For each method, we weighted rare variants using the weighting scheme recommended by @Wu2011; $w_v=Beta(MAF_v,1,25)/Beta(0,1,25)$. 
 
 We used the R package \texttt{VGAM} and function \texttt{vglm} to fit the 
-cumulative-logit regression model with proportional-odds assumption [@Yee2010], whose residuals are then used to construct the phenotypic similarity matrix input in the GAMuT package [@Broadaway2016].
+cumulative-logit regression model with proportional-odds assumption [@Yee2010], and use the resulting residuals to construct the phenotypic similarity matrix input in the GAMuT package [@Broadaway2016].
 
 
 
@@ -234,7 +235,8 @@ We simulated one binary phenotype for each subject (disease status). Then we use
 
 Orofacial clefts (OFCs) such as cleft lip (CL), cleft palate (CP), and cleft lip with cleft palate (CLP) 
 are among the most common birth defects in humans with prevalence between 1 in 500 and 
-1 in 2,500 live births [@Tessier1976, @Mossey2009]. Extensive recent studies have elucidated some light in the identification of common nucleotide variants associated with orofacial clefts, such as 1p22.1, 2p24.2, 3q29, 8q24.21, 10q25.3, 12q12, 16p13.3, 17q22, 17q23, 19q13, and 20q12 [@Birnbaum2009, @Grant2009, @Beaty2010, @Mangold2009, @Wolf2015, @Leslie2016, @Leslie2016b, @Mostowska2018].
+1 in 2,500 live births [@Tessier1976, @Mossey2009]. Extensive recent studies 
+identified common nucleotide variants associated with orofacial clefts, such as 1p22.1, 2p24.2, 3q29, 8q24.21, 10q25.3, 12q12, 16p13.3, 17q22, 17q23, 19q13, and 20q12 [@Birnbaum2009, @Grant2009, @Beaty2010, @Mangold2009, @Wolf2015, @Leslie2016, @Leslie2016b, @Mostowska2018].
 However, the role of rare genetic variation in OFCs is still underway. 
 
 The Pittsburgh Orofacial Cleft Multiethnic GWAS [@Leslie2016, @Leslie2016b] seeks to identify genetic variants that are associated with the risk of OFCs. This dataset includes a multi-ethnic cohort with 11,727 participants from 13 countries from North, Central or South America. Asia, Europe and Africa. Most of the participants were recruited as part of genetic and phenotyping studies by the University of Pittsburgh Center for Craniofacial and Dental Genetics, and some by the University of Iowa. The study cohort includes OFC-affected probands with their family members, and controls without history of OFC. Affection status consists of cleft lip (CL) with or without palate (CL/P).
@@ -267,7 +269,7 @@ knitr::include_graphics(c('figures/scenario1.png','figures/scenario3-2.png','fig
 ## Power Simulations
 
 Now, we compare the power of ordinal GAMuT with SKAT and burden test (Figure \@ref(fig:power-plot)). The power was estimated by computing the proportion of p-values less than the significance level ($\alpha=5 \times 10^{-5}$ for effect sizes of 4 and 6) out of 1000 replicates per scenario and model.
-For these power simulations, we use different effect sizes in figures ($C=4,6$). Columns refer to the conditional recurrence risk ratio $\lambda=2,4,8$, and rows refer to disease prevalences $0.01,0.05$ . We compare the empirical power for sample sizes of $N=400,750,1000,1500$ subjects per group. Our method (ordinal GAMuT) outperformed the burden test [@Li2008] and SKAT [@Wu2011], with power increasing as all simulation parameters (sample size, disease prevalence, recurrence risk, effect size) increased. 
+For these power simulations, we use different effect sizes in figures ($C=4,6$). Columns refer to the conditional recurrence risk ratio $\lambda=2,4,8$, and rows refer to disease prevalences $0.01,0.05$ . We compare the empirical power for sample sizes of $N=400,750,1000,1500$ subjects per group. First, we note that we observe an increased number of causal variants in cases with family history compared to controls (see Supplementary Materials). Our method (ordinal GAMuT) outperformed the burden test [@Li2008] and SKAT [@Wu2011], with power increasing as all simulation parameters (sample size, recurrence risk, effect size) increased. 
 Our method is more powerful given that other methods merge two clearly distinct groups: cases with and without family history, and thus, they cannot exploit the information present in the enrichment of causal variants in the cases with family history. Our ordinal approach models reality better by explicitly separating these two groups that have distinct genetic characteristics.
 
 
@@ -305,7 +307,7 @@ dat$method = factor(dat$method, levels=c("Ordinal GAMuT", "SKAT", "Burden Test")
 alpha <- 5e-5
 dat=within(dat,prev_target<-factor(prev_target, labels=c("Prevalence 0.01", "Prevalence 0.05")))
 dat2 = subset(dat,Nsibsize=="Parents Only")
-p2 = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color="method")) + 
+p2 = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color="method", shape="method")) + 
   geom_line() + geom_point(alpha=0.6) + 
   scale_x_continuous(labels = unique(dat2[,"n_per_group"]), breaks = unique(dat2[,"n_per_group"])) +
   theme(
@@ -320,7 +322,7 @@ p2 = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color="metho
   scale_y_continuous(limits = c(0, 1), expand = c(0,0)) + 
   facet_grid(paste0("prev_target","~","lambda")) + 
   ##guides(color=guide_legend(title="Method")) +
-  guides(color=FALSE)+
+  guides(color=FALSE, shape=FALSE)+
   xlab("Samples/Group") + 
   ylab(bquote(.('Empirical Power:')~alpha == .(alpha)))+
   ggtitle("RV effect size = 4")
@@ -331,7 +333,7 @@ dat$method = factor(dat$method, levels=c("Ordinal GAMuT", "SKAT", "Burden Test")
 alpha <- 5e-5
 dat=within(dat,prev_target<-factor(prev_target, labels=c("Prevalence 0.01", "Prevalence 0.05")))
 dat2 = subset(dat,Nsibsize=="Parents Only")
-p3 = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color="method")) + 
+p3 = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color="method", shape="method")) + 
   geom_line() + geom_point(alpha=0.6) + 
   scale_x_continuous(labels = unique(dat2[,"n_per_group"]), breaks = unique(dat2[,"n_per_group"])) +
   theme(
@@ -347,7 +349,7 @@ p3 = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color="metho
         ) +
   scale_y_continuous(limits = c(0, 1), expand = c(0,0)) + 
   facet_grid(paste0("prev_target","~","lambda")) + 
-  guides(color=guide_legend(title="Method")) +
+  guides(color=guide_legend(title="Method"), shape=FALSE) +
   xlab("Samples/Group") + 
   ylab(bquote(.('Empirical Power:')~alpha == .(alpha)))+
   ggtitle("RV effect size = 6")
@@ -362,7 +364,7 @@ g_legend<-function(a.gplot){
 }
 leg = g_legend(p3)
 
-p3no.leg = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color="method")) + 
+p3no.leg = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color="method", shape="method")) + 
   geom_line() + geom_point(alpha=0.6) + 
   scale_x_continuous(labels = unique(dat2[,"n_per_group"]), breaks = unique(dat2[,"n_per_group"])) +
   theme(
@@ -377,14 +379,14 @@ p3no.leg = ggplot(data = dat2, aes_string(x = "n_per_group", y = "power", color=
         ) +
   scale_y_continuous(limits = c(0, 1), expand = c(0,0)) + 
   facet_grid(paste0("prev_target","~","lambda")) + 
-  guides(color=FALSE) +
+  guides(color=FALSE, shape=FALSE) +
   xlab("Samples/Group") + 
   ylab(bquote(.('Empirical Power:')~alpha == .(alpha)))+
   ggtitle("RV effect size = 6")
 ```
 
 
-```{r power-plot,fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (blue), SKAT (green) and ordinal GAMuT (red). We compared two disease prevalences 0.01, 0.05 (rows), different conditional recurrence risk ratio $\\lambda=2,4,8$ (columns).', fig.height=8, fig.width=7}
+```{r power-plot,fig.align='center', fig.cap='Power for gene-based testing comparing three methods: burden test (blue, square), SKAT (green, triangle) and ordinal GAMuT (red, circle). We compared two disease prevalences 0.01, 0.05 (rows), different conditional recurrence risk ratio $\\lambda=2,4,8$ (columns).', fig.height=8, fig.width=7}
 ##p1
 ##p2
 ##p3
@@ -410,13 +412,13 @@ grid.arrange(p22,p33,leg,ncol=3, widths=c(2.2,2.2,1))
 
 ## Analysis of Pittsburgh Orofacial Cleft Multiethnic GWAS
 
-We applied our method to a Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS [@Leslie2016], [@Leslie2016b] with 1,411 Caucasian subjects (267 cases with family history, 309 cases without family history and 835 controls) and 61,671 variants used for annotation with Bystro [@Kotlar2018]. 
+We applied our method to a Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS [@Leslie2016], [@Leslie2016b] with 1,411 Caucasian subjects (267 cases with family history of clefting (up to third degree relatives), 309 cases without family history and 835 controls) and 61,671 variants used for annotation with Bystro [@Kotlar2018]. 
 We filtered rare variants with MAF $[0.001,0.05]$, and filtered genes to having minimum 4 rare variants, which resulted in 5,137 gene tests. 
-We tested the association between the 5,137 genes and CL or CL/P status, adjusting for PCs for population structure. We compared our results (ordinal GAMuT) with burden test and SKAT approach. 
+We tested the association between the 5,137 genes and CL or CL/P status, adjusting for principal components for population structure. We compared our results (ordinal GAMuT) with the burden test and SKAT approach. 
 Neither of the methods show any p-value inflation (Fig. \@ref(fig:cleft-qq)).
 
 None of the methods identified any genes significantly associated with CL/P. However, ordinal GAMuT 
-identified one gene (GRHL2) on chromosome 8 that passes the suggestive significance threshold (Fig. \@ref(fig:cleft-manhattan)). GRHL2 is in the same gene family as GRHL3, which is a transcription factor that is mutated in syndromic forms of clefting and is associated with nonsyndromic clefting [@Leslie2016, @Leslie2016b, @Carpinelli2017, @PeyrardJanvid2014].
+identified one gene (GRHL2) on chromosome 8 that passes the suggestive significance threshold (Fig. \@ref(fig:cleft-manhattan)). GRHL2 is in the same gene family as GRHL3, which is a transcription factor that causes syndromic forms of clefting and is associated with nonsyndromic clefting in other GWAS [@Leslie2016, @Leslie2016b, @Carpinelli2017, @PeyrardJanvid2014].
 
 
 ```{r, include=FALSE}
@@ -428,7 +430,7 @@ sugg = -log10(1e-04) ##=4
 gen = -log10(0.05/nrow(res_with_loc)) ##= 5.01174 
 ```
 
-```{r cleft-qq, fig.width=12, fig.height=4, fig.cap='Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test \\citep{Li2008}, SKAT \\citep{Wu2011} and the ordinal GAMuT here proposed.',fig.show='hold'}
+```{r cleft-qq, fig.width=12, fig.height=4, fig.cap='Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test \\citep{Li2008}, SKAT \\citep{Wu2011} and the ordinal GAMuT here proposed in the GWAS of Pittsburgh Orofacial Cleft Multiethnic.',fig.show='hold'}
 layout(matrix(c(1,2,3),nrow=1))
 qq(res_with_loc$p.gamut, main = "Ordinal GAMuT")
 qq(res_with_loc$p.skat, main = "SKAT")
@@ -486,7 +488,7 @@ None of these genes were found to be genome-wide significant, but YWHAZ, NCALD a
 # Discussion
 
 Standard GWAS methods for case-control studies usually define a disease outcome as a dichotomous phenotype. This phenotype ignores family history of disease, even if this information is available in the dataset at hand. 
-Given than cases with a family history of disease can be enriched for risk variation relative to sporadic cases, incorporating family history is expected to increase power to detect genetic variants associated with disease. 
+Given that cases with a family history of disease can be enriched for risk variation relative to sporadic cases and may represent a source of case heterogeneity, incorporating family history is expected to increase power to detect genetic variants associated with disease. 
 
 
 We introduce an extension to the GAMuT method [@Broadaway2016] to incorporate family information to enhance case-control association studies. This approach converts the usual binary phenotype of case-control status into an ordinal phenotype with three levels: cases with family history, cases without family history and controls, and it allows to adjust for covariates. 
@@ -494,18 +496,24 @@ Even though we do not include controls with family history, this ordinal approac
 with and without family history by considering an ordinal phenotype with 4 levels.
 Finally, just as the standard GAMuT test, the ordinal GAMuT obtains analytic p-values from Davies' method [@Davies1980] which is computationally efficient, allowing the analysis of datasets in the genomic scale.
 
-Simulation studies of rare variant sets showed that our ordinal GAMuT method is more powerful compared to usual gene-based tests like burden test [@Li2008] and SKAT [@Wu2011] due to the fact that subjects with family history are more enriched for rare causal variants.
+Simulation studies of rare variant sets showed that our ordinal GAMuT method is more powerful compared to usual gene-based tests like burden test [@Li2008] and SKAT [@Wu2011], possibly due to the fact that subjects with family history are more enriched for rare causal variants.
 Applying our method to Pittsburgh Orofacial Cleft Multiethnic GWAS [@Leslie2016, @Leslie2016b], we identified a gene (GRHL2) (not previously reported) to suggestively associate with cleft lip and palate phenotypes. 
-GRHL2 is in the same gene family as GRHL3, which is a transcription factor that is mutated in syndromic forms of clefting and is associated with nonsyndromic clefting [@Leslie2016, @Leslie2016b, @Carpinelli2017, @PeyrardJanvid2014].
+GRHL2 is in the same gene family as GRHL3, which is a transcription factor that causes in syndromic forms of clefting and was found to be associated with nonsyndromic clefting in GWAS [@Leslie2016, @Leslie2016b, @Carpinelli2017, @PeyrardJanvid2014].
 Burden and SKAT on these same phenotypes (figure \@ref(fig:cleft-manhattan)) failed to identify any significant or suggestive genes.
+Among the weaknesses of the proposed method, extra care should be taken if there is a small cell count of cases with family history in the dataset, or in highly unbalanced dataset in which one of the categories is highly dominant in frequency compared to the other categories.
 
-We envision two main future extensions of ordinal GAMuT: 1) to include information of more distant relatives, and 2) to use disease liability as continuous phenotype instead of a categorical phenotype.
+We envision two main future extensions of ordinal GAMuT: 1) to include information of more nuanced definitions of family history, and 2) to use disease liability as continuous phenotype instead of a categorical phenotype.
 Regarding disease liability, options for enhanced outcome variables could involve conditional means from liability-threshold models which have the potential to increase the power to detect genetic variants that are associated with disease risk.
 In fact, the popularity of proportional odds can be related to its connection to a linear regression 
 model on a continuous latent response (e.g. the liability score). 
 That is, the ordinal variable $Y$ is obtained from a latent continuous variable $Z$ 
 by $Y=k$ if $c_{k-1} < Z \leq c_k$. Thus, current ordinal GAMuT which utilizes proportional odds model has a natural extension into linear regression of the latent phenotype of disease liability.
 In the liability scale, family history can then be modeled as joint liability scores with a covariance matrix defined by the heritability of the disease.
+
+Perhaps here or in model definition, we should note that the proportional odds/"parallel" assumption
+may be relaxed, highlighting the flexibility of the phenotype entering GAMuT (and by extension, the flexibility 
+of ordinal GAMuT)
+Similarly, can replace the proportional odds model with something like an ordinal continuation ratio model (different logit formulations)
 
 <!--
 To include family information in the liability model, we will need to jointly model the liability score of family members. For example, if we have information on proband and parents, we can model the joint liability as a 3-dimensional vector with liability score of proband, father and mother. This joint liability vector is assumed to be distributed multivariate normal with mean that depends on the causal effects of genetic variants, and covariance matrix that depends on the heritability of the disease. Given the disease prevalence, we can estimate the threshold in the liability scale for case-control status. That is, an individual with liability score greater than the threshold determined by the prevalence will be considered affected (case), and an individual with liability score less than the threshold will be considered unaffected (control). Just as in the univariate case, the four categories of the ordinal phenotype (case with/without family history, and controls with/without family history) can be replaced by an estimate of the liability score obtained from the conditional means of the multivariate normal distribution. For example, an unaffected individual with affected parents will have an estimated liability score given by the conditional mean of the multivariate normal under the conditioning set that the liability of the individual is less than the prevalence-determined threshold, and the liabilities of the parents are greater than this prevalence-determined threshold.
@@ -529,81 +537,8 @@ This work was supported by NIH grants GM117946 [MP,DG], HG007508 [MP], R00-DE025
 To put appendix after references: https://stackoverflow.com/questions/41532707/include-rmd-appendix-after-references
 -->
 
-<!--
-## Unused code, maybe useful for some day
-# g1 = ggplotGrob(p1)
-# g2 = ggplotGrob(p2)
-# g3 = ggplotGrob(p3)
-# grid::grid.newpage()
-# ##grid::grid.draw(rbind(g1,g2, g3))
-# ##gridExtra::grid.arrange(g1,g2,g3)
-# library(ggpubr)
-# par(mar=c(0,0,0,0))
-# ggarrange(g1,g2,g3,heights = c(3,3,3),
-#           ncol = 1, nrow = 3, align = "v")
 
-
-# Extract the plot legend as a separate grob
-# http://stackoverflow.com/questions/12539348/ggplot-separate-legend-and-plot
-g_legend<-function(a.gplot){
-  tmp <- ggplot_gtable(ggplot_build(a.gplot))
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
-  legend <- tmp$grobs[[leg]]
-  legend
-}
-thm = theme(legend.justification="left")
-widths = c(8,5)
-leg = g_legend(p1)
-
-library(gridExtra)
-library(ggpubr)
-library(grid)
-grid.arrange(p1 + guides(color=FALSE), nullGrob(), widths=widths)
-grid.arrange(p2 + guides(color=FALSE), leg, widths=widths)
-grid.arrange(p2 + guides(color=FALSE), nullGrob(), widths=widths)
--->
-
-<!--
-``````{r repl-manhattan, fig.width=8, fig.height=4, fig.cap='Gene-based test on the replication dataset [@Mostowska2018] using burden, and SKAT approach. Manhattan plots for each of the two tests. Red line: genome-wide significance level ($-\\log_{10}(0.05/8) = 2.20412$). Blue line: suggestive level ($-\\log_{10}(0.05) = 1.301$).',fig.show='hold'}
-load("../replication/data/data_us/by_gene/res_with_loc.Rda")
-colnames(res_with_loc) <- c("gene","p.burden","p.skat","chr","bp")
-
-## significance thresholds
-sugg = -log10(0.05) ##=1.301
-gen = -log10(0.05/nrow(res_with_loc)) ##= 2.20412 
-
-layout(matrix(c(1,2),nrow=1))
-manhattan(res_with_loc, chr = "chr", bp = "bp", p = "p.skat",snp="gene",
-  col = c("blue4", "orange3"), chrlabs = NULL,annotatePval = 0.06, annotateTop = FALSE,
-  suggestiveline = sugg, genomewideline = gen, main="SKAT",ylim=c(0,6), xlim=c(9e7, 1.2e8))
-manhattan(res_with_loc, chr = "chr", bp = "bp", p = "p.burden",snp="gene",
-  col = c("blue4", "orange3"), chrlabs = NULL,annotatePval = 0.06, annotateTop = FALSE,
-  suggestiveline = sugg, genomewideline = gen, main="Burden",ylim=c(0,6), xlim=c(9e7, 1.2e8))
-```
-
-
-```{r repl-qq, fig.width=3.5, fig.height=3.5, fig.cap='Q-Q plots of p-values for gene-based tests of rare variants for two methods: burden test \\citep{Li2008}, SKAT \\citep{Wu2011} on xxx dataset.',fig.show='hold', fig.align="center"}
-load("../replication/data/data_us/by_gene/res_with_loc.Rda")
-colnames(res_with_loc) <- c("gene","p.burden","p.skat","chr","bp")
-source("../scripts/qqplot-MF.r")
-
-layout(matrix(c(1,2),nrow=1))
-qqunif.plot(res_with_loc$p.skat, main="SKAT")
-qqunif.plot(res_with_loc$p.burden, main = "Burden")
-```
-
-```{r qq0, out.width='33%', fig.cap="Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test \\citep{Li2008}, SKAT \\citep{Wu2011} and the ordinal GAMuT here proposed, with target disease prevalence of 0.01, $\\lambda=2$. Simulated datasets (10,000) assumed a 10kb region and rare variants defined as those with MAF <3\\%.",fig.show='hold'}
-knitr::include_graphics(c('figures/qq-burden.pdf','figures/qq-skat.pdf','figures/qq-gamut.pdf'))
-```
-
-# (APPENDIX) Appendix {-} 
-
-# Supplementary material
-
-```{r supp-qq, out.width='80%', fig.cap='Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test, SKAT, and the ordinal GAMuT here proposed. Simulated datasets (100,000) assumed a 10kb region and rare variants defined as those with MAF <3\\%. \\textbf{Top:} 750 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Middle:} 1000 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Bottom:} 750 subjects per group, disease prevalence of 0.01 and $\\lambda=4$.',fig.show='hold', fig.align='center'}
-knitr::include_graphics(c('figures/scenario3.png','figures/scenario4.png','figures/scenario5.png'))
-```
-
+# Supplementary Material
 
 ## Enrichment of Causal Variants
 
@@ -680,6 +615,79 @@ p2noleg = p2 + guides(fill=FALSE)
 
 ```{r causalvar,fig.align='center', fig.cap='Average of 1000 simulations of number of causal rare variants (left) and probability of disease (right) in proband for three groups: controls, cases without family history, and cases with family history under two disease prevalences (red=0.01, blue=0.05), with one (top) or two (bottom) siblings, and three conditional recurrence risk ratios as columns.', fig.height=4, fig.width=10}
 grid.arrange(p1,p2noleg,leg,ncol=3,widths=c(4,4,1))
+```
+
+
+<!--
+## Unused code, maybe useful for some day
+# g1 = ggplotGrob(p1)
+# g2 = ggplotGrob(p2)
+# g3 = ggplotGrob(p3)
+# grid::grid.newpage()
+# ##grid::grid.draw(rbind(g1,g2, g3))
+# ##gridExtra::grid.arrange(g1,g2,g3)
+# library(ggpubr)
+# par(mar=c(0,0,0,0))
+# ggarrange(g1,g2,g3,heights = c(3,3,3),
+#           ncol = 1, nrow = 3, align = "v")
+
+
+# Extract the plot legend as a separate grob
+# http://stackoverflow.com/questions/12539348/ggplot-separate-legend-and-plot
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+thm = theme(legend.justification="left")
+widths = c(8,5)
+leg = g_legend(p1)
+
+library(gridExtra)
+library(ggpubr)
+library(grid)
+grid.arrange(p1 + guides(color=FALSE), nullGrob(), widths=widths)
+grid.arrange(p2 + guides(color=FALSE), leg, widths=widths)
+grid.arrange(p2 + guides(color=FALSE), nullGrob(), widths=widths)
+-->
+
+<!--
+``````{r repl-manhattan, fig.width=8, fig.height=4, fig.cap='Gene-based test on the replication dataset [@Mostowska2018] using burden, and SKAT approach. Manhattan plots for each of the two tests. Red line: genome-wide significance level ($-\\log_{10}(0.05/8) = 2.20412$). Blue line: suggestive level ($-\\log_{10}(0.05) = 1.301$).',fig.show='hold'}
+load("../replication/data/data_us/by_gene/res_with_loc.Rda")
+colnames(res_with_loc) <- c("gene","p.burden","p.skat","chr","bp")
+
+## significance thresholds
+sugg = -log10(0.05) ##=1.301
+gen = -log10(0.05/nrow(res_with_loc)) ##= 2.20412 
+
+layout(matrix(c(1,2),nrow=1))
+manhattan(res_with_loc, chr = "chr", bp = "bp", p = "p.skat",snp="gene",
+  col = c("blue4", "orange3"), chrlabs = NULL,annotatePval = 0.06, annotateTop = FALSE,
+  suggestiveline = sugg, genomewideline = gen, main="SKAT",ylim=c(0,6), xlim=c(9e7, 1.2e8))
+manhattan(res_with_loc, chr = "chr", bp = "bp", p = "p.burden",snp="gene",
+  col = c("blue4", "orange3"), chrlabs = NULL,annotatePval = 0.06, annotateTop = FALSE,
+  suggestiveline = sugg, genomewideline = gen, main="Burden",ylim=c(0,6), xlim=c(9e7, 1.2e8))
+```
+
+
+```{r repl-qq, fig.width=3.5, fig.height=3.5, fig.cap='Q-Q plots of p-values for gene-based tests of rare variants for two methods: burden test \\citep{Li2008}, SKAT \\citep{Wu2011} on xxx dataset.',fig.show='hold', fig.align="center"}
+load("../replication/data/data_us/by_gene/res_with_loc.Rda")
+colnames(res_with_loc) <- c("gene","p.burden","p.skat","chr","bp")
+source("../scripts/qqplot-MF.r")
+
+layout(matrix(c(1,2),nrow=1))
+qqunif.plot(res_with_loc$p.skat, main="SKAT")
+qqunif.plot(res_with_loc$p.burden, main = "Burden")
+```
+
+```{r qq0, out.width='33%', fig.cap="Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test \\citep{Li2008}, SKAT \\citep{Wu2011} and the ordinal GAMuT here proposed, with target disease prevalence of 0.01, $\\lambda=2$. Simulated datasets (10,000) assumed a 10kb region and rare variants defined as those with MAF <3\\%.",fig.show='hold'}
+knitr::include_graphics(c('figures/qq-burden.pdf','figures/qq-skat.pdf','figures/qq-gamut.pdf'))
+```
+
+
+```{r supp-qq, out.width='80%', fig.cap='Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test, SKAT, and the ordinal GAMuT here proposed. Simulated datasets (100,000) assumed a 10kb region and rare variants defined as those with MAF <3\\%. \\textbf{Top:} 750 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Middle:} 1000 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Bottom:} 750 subjects per group, disease prevalence of 0.01 and $\\lambda=4$.',fig.show='hold', fig.align='center'}
+knitr::include_graphics(c('figures/scenario3.png','figures/scenario4.png','figures/scenario5.png'))
 ```
 
 -->
