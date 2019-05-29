@@ -239,11 +239,11 @@ are among the most common birth defects in humans with prevalence between 1 in 5
 identified common nucleotide variants associated with orofacial clefts, such as 1p22.1, 2p24.2, 3q29, 8q24.21, 10q25.3, 12q12, 16p13.3, 17q22, 17q23, 19q13, and 20q12 [@Birnbaum2009, @Grant2009, @Beaty2010, @Mangold2009, @Wolf2015, @Leslie2016, @Leslie2016b, @Mostowska2018].
 However, the role of rare genetic variation in OFCs is still underway. 
 
-The Pittsburgh Orofacial Cleft Multiethnic GWAS [@Leslie2016, @Leslie2016b] seeks to identify genetic variants that are associated with the risk of OFCs. This dataset includes a multi-ethnic cohort with 11,727 participants from 13 countries from North, Central or South America. Asia, Europe and Africa. Most of the participants were recruited as part of genetic and phenotyping studies by the University of Pittsburgh Center for Craniofacial and Dental Genetics, and some by the University of Iowa. The study cohort includes OFC-affected probands with their family members, and controls without history of OFC. Affection status consists of cleft lip (CL) with or without palate (CL/P).
+The Pittsburgh Orofacial Cleft Multiethnic GWAS [@Leslie2016, @Leslie2016b] seeks to identify genetic variants that are associated with the risk of OFCs. This dataset includes a multi-ethnic cohort with 11,727 participants from 13 countries from North, Central or South America. Asia, Europe and Africa. Most of the participants were recruited as part of genetic and phenotyping studies coordinated by the University of Pittsburgh Center for Craniofacial and Dental Genetics and the University of Iowa. The study cohort includes OFC-affected probands with their family members, and controls without history of OFC. Affection status consists of cleft lip (CL) with or without palate (CL/P).
 
-We performed standard data cleaning and quality control (see @Leslie2016). We kept only Caucasian participants, and we kept rare variants with MAF in $(0.001,0.05)$ and genotype call rate greater than $95\%$.
+We performed standard data cleaning and quality control (see @Leslie2016). We analyzed only Caucasian participants, and we kept rare variants with MAF in $(0.001,0.05)$ and genotype call rate greater than $95\%$.
 
-The final sample consisted of 1411 individuals, among which there were 835 controls, 309 cases without family history and 267 cases with family history. We did not include any covariates except for the 5 PCs (see @Leslie2016 for the details on the PCA).
+The final sample consisted of 1411 individuals, among which there were 835 controls, 309 cases without family history and 267 cases with family history. We did not include any covariates except for 5 principal components of ancestry (see @Leslie2016 for the details on the Principal Components Analysis).
 We applied ordinal GAMuT using linear kernel to measure pairwise phenotypic similarity.
 We also ran SKAT and burden tests, with the typical weights defined in @Wu2011. For GAMuT, we used a weighted linear kernel (with the weighting scheme in @Wu2011) to measure pairwise genotypic similarity.
 
@@ -526,7 +526,7 @@ Finally, ordinal GAMuT is not restricted to rare genetic variants. Similar analy
 See section of Web Resources for the R scripts to run ordinal GAMuT.
 
 
-**Acknowledgements:** Samples provided by Kaare Christensen (University of Southern Denmark), Frederic W.B. Deleyiannis (University of Colorado School of Medicine, Denver), Jacqueline T. Hecht (McGovern Medical School and School of Dentistry UT Health at Houston), George L. Wehby (University of Iowa), Seth M. Weinberg (University of Pittsburgh), Jeffrey C. Murray (University of Iowa) and Mary L. Marazita (University of Pittsburgh).
+**Acknowledgements:** Data for the Orofacial Cleft Multiethnic GWAS comes from samples provided by Kaare Christensen (University of Southern Denmark), Frederic W.B. Deleyiannis (University of Colorado School of Medicine, Denver), Jacqueline T. Hecht (McGovern Medical School and School of Dentistry UT Health at Houston), George L. Wehby (University of Iowa), Seth M. Weinberg (University of Pittsburgh), Jeffrey C. Murray (University of Iowa) and Mary L. Marazita (University of Pittsburgh).
 This work was supported by NIH grants GM117946 [MP,DG], HG007508 [MP], R00-DE025060 [EJL], X01-HG007485 [MLM], R01-DE016148 [MLM, SMW], U01-DE024425 [MLM], R37-DE008559 [JCM, MLM], R21-DE016930 [MLM], R01-DE012472 [MLM], R01-DE011931 [JTH], R01-DE011948 [KC], U01-DD000295 [GLW]; NIH contract to the Johns Hopkins Center for Inherited Disease Research: HHSN268201200008I.
 
 
