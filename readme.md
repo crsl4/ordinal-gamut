@@ -1,6 +1,3 @@
-# To do
-- taylor: other QQ plot for other simulation designs to put in suppl
-
 # Ordinal GAMuT 
 
 Meeting 8/27/2018
