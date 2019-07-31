@@ -92,6 +92,7 @@ Cutler\(^1\), Debashis Ghosh\(^3\), Michael P. Epstein\(^1\)}
 \DeclareMathOperator{\trace}{trace}
 \usepackage[dvipsnames]{xcolor}
 \newcommand{\missing}[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand{\revision}[1]{\textcolor{blue}{#1}}
 \usepackage{setspace}
 
 \doublespacing
@@ -101,20 +102,6 @@ Cutler\(^1\), Debashis Ghosh\(^3\), Michael P. Epstein\(^1\)}
 \usepackage{lineno}
 \linenumbers
 
-\usepackage{amsthm}
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{lemma}{Lemma}[section]
-\theoremstyle{definition}
-\newtheorem{definition}{Definition}[section]
-\newtheorem{corollary}{Corollary}[section]
-\newtheorem{proposition}{Proposition}[section]
-\theoremstyle{definition}
-\newtheorem{example}{Example}[section]
-\theoremstyle{definition}
-\newtheorem{exercise}{Exercise}[section]
-\theoremstyle{remark}
-\newtheorem*{remark}{Remark}
-\newtheorem*{solution}{Solution}
 \begin{document}
 \maketitle
 
@@ -180,15 +167,15 @@ employing traditional case-control sampling designs for analysis
 \citep{DeRubeis2014, Sanders2017}. Under such a design, studies
 typically test whether patterns of rare variation within a gene or
 region of interest differ between affected and unaffected subjects using
-either burden \citep{Li2008} or variance-component \citep{Wu2011}
-approaches based on an underlying logistic-regression framework that
-treats disease status as a simple dichotomous outcome variable. While
-such an analysis strategy is commonplace, there may exist helpful
-secondary information collected by the study that can facilitate the
-creation of a modified outcome variable that is more refined than the
-coarse dichotomous outcome typically considered. Use of this refined
-outcome variable within the study can reduce heterogeneity and
-potentially lead to more powerful analyses.
+either burden \citep{Li2008, Madsen2009} or variance-component
+\citep{Wu2011} approaches based on an underlying logistic-regression
+framework that treats disease status as a simple dichotomous outcome
+variable. While such an analysis strategy is commonplace, there may
+exist helpful secondary information collected by the study that can
+facilitate the creation of a modified outcome variable that is more
+refined than the coarse dichotomous outcome typically considered. Use of
+this refined outcome variable within the study can reduce heterogeneity
+and potentially lead to more powerful analyses.
 
 One valuable source of secondary information often collected in a
 case-control study (but rarely utilized) is whether a sample participant
@@ -197,13 +184,13 @@ family history of disease demonstrate different patterns of genetic
 variation than their sporadic counterparts. In particular, several
 papers have noted that a sample of cases reporting affected relatives
 are more enriched for a causal variant than cases without such family
-history \citep{TengRisch1999, Zollner2012, Epstein2015} since more risk
-variants tend to segregrate in families with multiple affected
-individuals. Likewise, controls with a family history of disease should
-have elevated frequency of a causal variant compared to sporadic
-controls \citep{Liu2017}. These observations motivate replacement of the
-standard dichotomous outcome variable for disease with a more refined
-variable that incorporates family-history information into the coding.
+history \citep{TengRisch1999, Zollner2012, Epstein2015} since
+\textcolor{blue}{families with multiple affected individuals tend to segregrate more risk variants.}
+Likewise, controls with a family history of disease should have elevated
+frequency of a causal variant compared to sporadic controls
+\citep{Liu2017}. These observations motivate replacement of the standard
+dichotomous outcome variable for disease with a more refined variable
+that incorporates family-history information into the coding.
 
 In deciding how to refine the variable, we note that we should expect
 the frequency of a risk variant to follow a gradient that increases in
@@ -237,7 +224,7 @@ present simulation work to show that leveraging family history
 information via ordinal categorical variables can improve power in
 rare-variant association tests compared to standard dichotomous modeling
 of disease phenotypes that ignore such information, like the burden test
-\citep{Li2008} and Sequence Kernel Association Test (SKAT)
+\citep{Li2008, Madsen2009} and Sequence Kernel Association Test (SKAT)
 \citep{Wu2011}. Finally, we apply ordinal GAMuT to rare and less-common
 variant data from a genome-wide study of craniofacial defects
 \citep{Leslie2016, Leslie2016b, Mostowska2018}.
@@ -330,6 +317,8 @@ and the matrix of estimated multinomial probabilities:
 then be input into the GAMuT framework to enable rare-variant
 association testing. The GAMuT framework allows for correlated
 phenotypes, and will be described in the following section.
+\textcolor{blue}{Given that the GAMuT framework simply takes the residuals of the ordinal model as input, we highlight that this approach does not depend on a specific ordinal model. That is, 
+the proportional odds model was chosen for simplicity, and the ordinal GAMuT approach could easily be extended to other ordinal models like continuation ratio with different logit formulations. The only difference would be the estimation of $(\hat{\mu}_{j,0},\hat{\mu}_{j,1},\hat{\mu}_{j,2})$ using a different ordinal model with more general assumptions.}
 
 \hypertarget{gamut-test-of-cross-phenotype-associations}{%
 \subsection{GAMuT Test of Cross-Phenotype
@@ -376,8 +365,8 @@ analytically calculate the p-value of \(T_{GAMuT}\).
 
 We conducted simulations to show that ordinal GAMuT properly preserves
 the type I error and to assess the power of ordinal GAMuT relative to
-standard case-control burden \citep{Li2008} and SKAT \citep{Wu2011}
-tests that do not account for family history information.
+standard case-control burden \citep{Li2008, Madsen2009} and SKAT
+\citep{Wu2011} tests that do not account for family history information.
 
 For the genetic data, we simulated trios (parents and offspring) with
 10,000 haplotypes of 10 kb in size using COSI \citep{cosi}, a coalescent
@@ -502,15 +491,15 @@ disease prevalences \(0.01,0.05\) . We compare the empirical power for
 sample sizes of \(N=400,750,1000,1500\) subjects per group. First, we
 note that we observe an increased number of causal variants in cases
 with family history compared to controls (see Supplementary Materials).
-Our method (ordinal GAMuT) outperformed the burden test \citep{Li2008}
-and SKAT \citep{Wu2011}, with power increasing as sample size,
-recurrence risk, and effect size increased. Our method is more powerful
-given that other methods merge two clearly distinct groups: cases with
-and without family history, and thus, they cannot exploit the
-information present in the enrichment of causal variants in the cases
-with family history. Our ordinal approach models reality better by
-explicitly separating these two groups that have distinct genetic
-characteristics.
+Our method (ordinal GAMuT) outperformed the burden test
+\citep{Li2008, Madsen2009} and SKAT \citep{Wu2011}, with power
+increasing as sample size, recurrence risk, and effect size increased.
+Our method is more powerful given that other methods merge two clearly
+distinct groups: cases with and without family history, and thus, they
+cannot exploit the information present in the enrichment of causal
+variants in the cases with family history. Our ordinal approach models
+reality better by explicitly separating these two groups that have
+distinct genetic characteristics.
 
 \begin{figure}
 
@@ -550,8 +539,8 @@ and is associated with nonsyndromic clefting in other GWAS
 \centering
 \includegraphics{ordinal-gamut_files/figure-latex/cleft-qq-1.pdf}
 \caption{\label{fig:cleft-qq}Q-Q plots of p-values for gene-based tests of
-rare variants for three methods: burden test \citep{Li2008}, SKAT
-\citep{Wu2011} and the ordinal GAMuT here proposed in the GWAS of
+rare variants for three methods: burden test \citep{Li2008, Madsen2009},
+SKAT \citep{Wu2011} and the ordinal GAMuT here proposed in the GWAS of
 Pittsburgh Orofacial Cleft Multiethnic.}
 \end{figure}
 
@@ -585,22 +574,25 @@ allows adjustment for covariates. Even though we do not include controls
 with family history, this ordinal approach can easily be extended to the
 case of four categories: controls with and without family history, and
 cases with and without family history by considering an ordinal
-phenotype with 4 levels. Finally, just as the standard GAMuT test, the
-ordinal GAMuT obtains analytic p-values from Davies' method
-\citep{Davies1980} which is computationally efficient, allowing the
-analysis of datasets in the genomic scale.
+phenotype with 4 levels.
+\textcolor{blue}{It is common practice to exclude controls with a family history of disease because it is believed that the inclusion of such controls would reduce the power of a standard case-control approach, and also, there are not many software alternatives that can leverage information from such controls. Our ordinal methodology will allow for an easy inclusion of controls with family history, and we showed here that this inclusion increases power.}
+
+Finally, just as the standard GAMuT test, the ordinal GAMuT obtains
+analytic p-values from Davies' method \citep{Davies1980} which is
+computationally efficient, allowing the analysis of datasets in the
+genomic scale.
 
 Simulation studies of rare variant sets showed that our ordinal GAMuT
 method is more powerful compared to usual gene-based tests like burden
-test \citep{Li2008} and SKAT \citep{Wu2011}, possibly due to the fact
-that subjects with family history are more enriched for rare causal
-variants. Applying our method to Pittsburgh Orofacial Cleft Multiethnic
-GWAS \citep{Leslie2016, Leslie2016b}, we identified a gene (GRHL2) (not
-previously reported) to suggestively associate with cleft lip and palate
-phenotypes. GRHL2 is in the same gene family as GRHL3, which is a
-transcription factor that causes in syndromic forms of clefting and was
-found to be associated with nonsyndromic clefting in GWAS
-\citep{Leslie2016, Leslie2016b, Carpinelli2017, PeyrardJanvid2014}.
+test \citep{Li2008, Madsen2009} and SKAT \citep{Wu2011}, possibly due to
+the fact that subjects with family history are more enriched for rare
+causal variants. Applying our method to Pittsburgh Orofacial Cleft
+Multiethnic GWAS \citep{Leslie2016, Leslie2016b}, we identified a gene
+(GRHL2) (not previously reported) to suggestively associate with cleft
+lip and palate phenotypes. GRHL2 is in the same gene family as GRHL3,
+which is a transcription factor that causes in syndromic forms of
+clefting and was found to be associated with nonsyndromic clefting in
+GWAS \citep{Leslie2016, Leslie2016b, Carpinelli2017, PeyrardJanvid2014}.
 Burden and SKAT on these same phenotypes (figure
 \ref{fig:cleft-manhattan}) failed to identify any significant or
 suggestive genes. Among the weaknesses of the proposed method, extra
@@ -626,12 +618,7 @@ disease liability. In the liability scale, family history can then be
 modeled as joint liability scores with a covariance matrix defined by
 the heritability of the disease.
 
-Perhaps here or in model definition, we should note that the
-proportional odds/``parallel'' assumption may be relaxed, highlighting
-the flexibility of the phenotype entering GAMuT (and by extension, the
-flexibility of ordinal GAMuT) Similarly, can replace the proportional
-odds model with something like an ordinal continuation ratio model
-(different logit formulations)
+\textcolor{blue}{We can note that the proportional odds assumption can be relaxed due to the flexibility of the multiple phenotypes entering GAMuT. That is, the residuals could be obtained from the proportional odds model (as exemplified here) or from the ordinal continuation ratio model with different logit formulations. The ordinal GAMuT methodology does not rely on a specific type of ordinal model.}
 
 Finally, ordinal GAMuT is not restricted to rare genetic variants.
 Similar analysis could be performed for gene-based analysis of common

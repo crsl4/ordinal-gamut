@@ -5,10 +5,12 @@
 - Try MAF=0.001-0.01 with c=8,12, prevalence 5%
 - Try prevalence<1%, like 0.1%
 - Try craniofacial with MAF cutoff 3%
+- Try simulations with 50kb
+- table as opposed to qqplot
 
 ## Claudia
-- simulation testing the proportional odds assumption: what happens if violated?
-- all changes to manuscript
+- simulation testing the proportional odds assumption: what happens if violated? -> added in text
+- eigenvalue of M
 
 # Associate Editor
 Please note the request to address the proportional odds assumption, and the questions of prevalence and other assumptions in simulations in the impact of the method. I note that there was an attempt to marry case-control and linkage approaches by Hu et al in Pedigree VAAST (pVAAST) and am wondering if this should be referenced. 
