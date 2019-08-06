@@ -10,7 +10,6 @@
 
 ## Claudia
 - simulation testing the proportional odds assumption: what happens if violated? -> added in text
-- eigenvalue of M
 
 # Associate Editor
 Please note the request to address the proportional odds assumption, and the questions of prevalence and other assumptions in simulations in the impact of the method. I note that there was an attempt to marry case-control and linkage approaches by Hu et al in Pedigree VAAST (pVAAST) and am wondering if this should be referenced. 
@@ -57,6 +56,19 @@ Minor Comments:
 
 3. Using the cumulative-logit model to connect the ordinal problem to GAMuT was quite innovative. My only concern is that the constraint on the estimated multinomial probabilities (ie, summing to 1) should induce a co-linearity... thus, it would seem that the M matrix (and hence the I-M matrix) should both be dimension [Nx2]. A brief sentence or two on why [Nx3] is actually ok, or a re-write with [Nx2] would be appreciated. 
 - check that there are only 2 eigenvalues on M, so that that takes care of the colinearity
+
+Claudia: We study the eigenvalues on M:
+```r
+> d = read.table("example_residuals.txt", sep="\t", header=TRUE)
+
+> eigen(as.matrix(d) %*% t(as.matrix(d)))
+eigen() decomposition
+$values
+ [1]  4.166883e+00  2.479091e+00  5.994497e-16  7.424587e-17  4.051371e-17
+ [6]  1.940385e-17  1.398665e-17  1.089682e-17 -9.412861e-18 -1.011373e-17
+[11] -3.053547e-17 -3.740383e-17 -7.190386e-17 -2.460905e-16 -5.433743e-16
+```
+Yes, only first two eigenvalues.
 
 4. The region size (eg 10kb) is a little small, given that the typical gene is between 50 and 100 kb in length. Some discussion on how ordinal GAMuT scales to larger regions would be useful. Also, wrt the same figure, Panel A, Panel B, Panel C, and Panel D, is much better than top, top middle, bottom middle, bottom.
 - more simulations with 50kb

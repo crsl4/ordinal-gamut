@@ -102,6 +102,20 @@ Cutler\(^1\), Debashis Ghosh\(^3\), Michael P. Epstein\(^1\)}
 \usepackage{lineno}
 \linenumbers
 
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{proposition}{Proposition}[section]
+\theoremstyle{definition}
+\newtheorem{example}{Example}[section]
+\theoremstyle{definition}
+\newtheorem{exercise}{Exercise}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newtheorem*{solution}{Solution}
 \begin{document}
 \maketitle
 
@@ -313,10 +327,11 @@ if \(\tilde{Q}_j=2\), then the binary vector in the \(j^{th}\) row would
 be \((0,0,1)\). As a result, the matrix of residuals \(\mathbf{R}\) will
 be the \(N \times 3\) matrix of the difference between the binary matrix
 and the matrix of estimated multinomial probabilities:
-\(\mathbf{I}_{\tilde{Q}}-\mathbf{M}\). This matrix of residuals will
-then be input into the GAMuT framework to enable rare-variant
-association testing. The GAMuT framework allows for correlated
-phenotypes, and will be described in the following section.
+\(\mathbf{I}_{\tilde{Q}}-\mathbf{M}\).
+\textcolor{blue}{It could be argued that given the co-linearity, we could use a $N \times 2$ matrix, as opposed to a $N \times 3$ matrix, which is true. However, given that the construction of the test statistic will ultimately depend on the eigenvalues of $M$, not $M$ itself, the $N \times 3$ matrix will produce the same two non-zero eigenvalues.}
+This matrix of residuals will then be input into the GAMuT framework to
+enable rare-variant association testing. The GAMuT framework allows for
+correlated phenotypes, and will be described in the following section.
 \textcolor{blue}{Given that the GAMuT framework simply takes the residuals of the ordinal model as input, we highlight that this approach does not depend on a specific ordinal model. That is, 
 the proportional odds model was chosen for simplicity, and the ordinal GAMuT approach could easily be extended to other ordinal models like continuation ratio with different logit formulations. The only difference would be the estimation of $(\hat{\mu}_{j,0},\hat{\mu}_{j,1},\hat{\mu}_{j,2})$ using a different ordinal model with more general assumptions.}
 
@@ -575,7 +590,10 @@ with family history, this ordinal approach can easily be extended to the
 case of four categories: controls with and without family history, and
 cases with and without family history by considering an ordinal
 phenotype with 4 levels.
-\textcolor{blue}{It is common practice to exclude controls with a family history of disease because it is believed that the inclusion of such controls would reduce the power of a standard case-control approach, and also, there are not many software alternatives that can leverage information from such controls. Our ordinal methodology will allow for an easy inclusion of controls with family history, and we showed here that this inclusion increases power.}
+\textcolor{blue}{It is common practice to exclude controls with a family history of disease because it is believed that the inclusion of such controls would reduce the power of a standard case-control approach, and also, there are not many software alternatives that can leverage information from such controls. Our ordinal methodology will allow for an easy inclusion of controls with family history, and we showed here that this inclusion increases power. We further note that there have been other methodologies to unite
+case-control and linkage approaches, like Pedigree VAAST (pVAAST)}
+\citep{Hu2014}.
+\textcolor{blue}{If the dataset at hand contains genetic data not only on the case with family history, but also on the case's relatives, then the pVAAST method would be appropriate.}
 
 Finally, just as the standard GAMuT test, the ordinal GAMuT obtains
 analytic p-values from Davies' method \citep{Davies1980} which is
