@@ -1,4 +1,23 @@
-# To do
+# Sent to Mike and Taylor
+
+Please note the request to address the proportional odds assumption, and the questions of prevalence and other assumptions in simulations in the impact of the method. I note that there was an attempt to marry case-control and linkage approaches by Hu et al in Pedigree VAAST (pVAAST) and am wondering if this should be referenced. 
+Reply: We added this reference in the text
+
+(1) How important is the proportional odds assumption? Can the authors please provide some practical advice on how to determine whether results from GAMuT are still valid if the assumption is violated? i.e., how robust is GAMuT to violations of the proportional odds assumption? 
+Reply: The proportional odds assumption is not a crucial component of the GAMuT formulation. The proportional odds model was chosen for simplicity, and the ordinal GAMuT approach could easily be extended to other ordinal models like continuation ratio with different logit formulations. The only difference would be the estimation of (μˆj,0,μˆj,1,μˆj,2) using a different ordinal model with more general assumptions. We added this to the text in page 7, lines 111-116.
+Model selection tools available in the VGAM package (functions AICvlm and BICvlm) could be used to test the adequacy of the proportional odds assumption in a particular dataset.
+
+1. Researchers routinely exclude controls with a family history of disease because they (1) know/believe that the inclusion of such controls would reduce the power of a standard case-control approach, and (2) do not know of any software that would allow them to leverage information from such controls. (Furthermore, some researchers have both affected families and independent cases.) This time-honored practice is another line of evidence supporting the assertion that family-history matters, and that the author's method (esp. the version that contains 4 levels) could be valuable. Some additional discussion of these points might be useful. 
+Reply: Thank you for this suggestion. We added additional discussion about these points in page 14, lines 230-234.
+
+2. In Introduction, the authors write: "..since more risk variants tend to segregate..." I know that we live in a variant-centric world, but variants do not segregate, FAMILIES segregrate! Thus, "...families with multiple affected individuals tend to segregrate more risk variants." is the correct statement. 
+Reply: We modified the introduction accordingly
+
+3. Using the cumulative-logit model to connect the ordinal problem to GAMuT was quite innovative. My only concern is that the constraint on the estimated multinomial probabilities (ie, summing to 1) should induce a co-linearity... thus, it would seem that the M matrix (and hence the I-M matrix) should both be dimension [Nx2]. A brief sentence or two on why [Nx3] is actually ok, or a re-write with [Nx2] would be appreciated. 
+Reply: While it is true that the constraint on the multinomial probabilities (summing to 1) induces co-linearity, we highlight that the GAMuT test statistic depends on the eigenvalues of M, not M itself, and co-linearity is taken care of automatically (by having one eigenvalue equal to zero). We added this to the text in page 7, lines 106-109.
+
+6. Lastly, I know that the community has simply accepted that Li and Leal is the correct citation for burden, but in fact, the word burden cannot be found anywhere in the Li and Leal paper. As such, I think the authors should include a Madsen and Browning citation for the weighted sum statistic, which is much more in the spirit of burden. 
+Reply: We added this reference to the text.
 
 ## Taylor
 - runtime SKAT vs our approach?
@@ -13,6 +32,7 @@
 
 # Associate Editor
 Please note the request to address the proportional odds assumption, and the questions of prevalence and other assumptions in simulations in the impact of the method. I note that there was an attempt to marry case-control and linkage approaches by Hu et al in Pedigree VAAST (pVAAST) and am wondering if this should be referenced. 
+Reply: We added this reference in the text
 - add reference to https://www.ncbi.nlm.nih.gov/pubmed/24837662
 
 # Reviewer 2 (Comments for the Authors (Required)): 
@@ -22,7 +42,7 @@ The authors present a new approach to rare-variant association testing, called G
 Comments 
 
 (1) How important is the proportional odds assumption? Can the authors please provide some practical advice on how to determine whether results from GAMuT are still valid if the assumption is violated? i.e., how robust is GAMuT to violations of the proportional odds assumption? 
-- relax proportional odds model assumption; we might want to do a simulation under no proportional odds and see how it performs
+Reply: The proportional odds assumption is not a crucial component of the GAMuT formulation. The proportional odds model was chosen for simplicity, and the ordinal GAMuT approach could easily be extended to other ordinal models like continuation ratio with different logit formulations. The only difference would be the estimation of (μˆj,0,μˆj,1,μˆj,2) using a different ordinal model with more general assumptions. We added this to the text in page 7, lines 111-116.
 
 (2) Is run-time an issue? Some benchmarking against SKAT would be helpful. Some sequence-based datasets can be very large. 
 - runtime benchmark vs SKAT: maybe they talk about this on the original gamut paper; did taylor simulations saving running time?
@@ -49,13 +69,14 @@ The authors describe a natural extension of the standard case-control paradigm a
 Minor Comments: 
 
 1. Researchers routinely exclude controls with a family history of disease because they (1) know/believe that the inclusion of such controls would reduce the power of a standard case-control approach, and (2) do not know of any software that would allow them to leverage information from such controls. (Furthermore, some researchers have both affected families and independent cases.) This time-honored practice is another line of evidence supporting the assertion that family-history matters, and that the author's method (esp. the version that contains 4 levels) could be valuable. Some additional discussion of these points might be useful. 
-- add discussion point
+Reply: Thank you for this suggestion. We added additional discussion about these points in page 14, lines 230-234.
+
 
 2. In Introduction, the authors write: "..since more risk variants tend to segregate..." I know that we live in a variant-centric world, but variants do not segregate, FAMILIES segregrate! Thus, "...families with multiple affected individuals tend to segregrate more risk variants." is the correct statement. 
-- change introduction
+Reply: We modified the introduction accordingly
 
 3. Using the cumulative-logit model to connect the ordinal problem to GAMuT was quite innovative. My only concern is that the constraint on the estimated multinomial probabilities (ie, summing to 1) should induce a co-linearity... thus, it would seem that the M matrix (and hence the I-M matrix) should both be dimension [Nx2]. A brief sentence or two on why [Nx3] is actually ok, or a re-write with [Nx2] would be appreciated. 
-- check that there are only 2 eigenvalues on M, so that that takes care of the colinearity
+Reply: While it is true that the constraint on the multinomial probabilities (summing to 1) induces co-linearity, we highlight that the GAMuT test statistic depends on the eigenvalues of M, not M itself, and co-linearity is taken care of automatically (by having one eigenvalue equal to zero). We added this to the text in page 7, lines 106-109.
 
 Claudia: We study the eigenvalues on M:
 ```r
@@ -77,4 +98,4 @@ Yes, only first two eigenvalues.
 - add table to qqplots
 
 6. Lastly, I know that the community has simply accepted that Li and Leal is the correct citation for burden, but in fact, the word burden cannot be found anywhere in the Li and Leal paper. As such, I think the authors should include a Madsen and Browning citation for the weighted sum statistic, which is much more in the spirit of burden. 
-- add reference
+Reply: We added this reference to the text.
