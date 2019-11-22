@@ -23,6 +23,8 @@ knitr::opts_chunk$set(message=FALSE, warning=FALSE,
 
 # Introduction
 
+small test
+
 Standard methods for case-control association studies of rare and common variation often treat disease outcome as a dichotomous phenotype. However, both theoretical and experimental studies have demonstrated that cases with a family history of disease can be enriched for risk variation relative to sporadic cases. Likewise, controls with a family history of disease can harbor more risk variation than controls without such history. 
 
 Assuming family-history information is available, this observation motivates the idea of replacing the standard dichotomous outcome variable in case-control studies with a more informative outcome variable that distinguishes cases with and without family history, and controls. The rationale is that subjects with family history (FH) can be more enriched for variants of most common diseases. That is, we expect to see more causal variants in cases with family history and want to leverage this trend in our association test. 
