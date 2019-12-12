@@ -1,0 +1,469 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Leveraging Family History in Case-Control Analyses of Rare Variation},
+            pdfauthor={Claudia R. Solis-Lemus\^{}\{1*\}, S. Taylor Fischer\^{}\{2*\}, Andrei Todor\^{}1, Cuining Liu\^{}3, Elizabeth J. Leslie\^{}1, David J. Cutler\^{}1, Debashis Ghosh\^{}3, Michael P. Epstein\^{}1},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{natbib}
+\bibliographystyle{apalike}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Leveraging Family History in Case-Control Analyses of Rare Variation}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Claudia R. Solis-Lemus\(^{1*}\), S. Taylor Fischer\(^{2*}\), Andrei Todor\(^1\), Cuining Liu\(^3\), Elizabeth J. Leslie\(^1\), David J. Cutler\(^1\), Debashis Ghosh\(^3\), Michael P. Epstein\(^1\)}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+\DeclareMathOperator{\logit}{logit}
+\DeclareMathOperator{\trace}{trace}
+\usepackage[dvipsnames]{xcolor}
+\newcommand{\missing}[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand{\revision}[1]{\textcolor{blue}{#1}}
+\usepackage{setspace}
+
+\doublespacing
+\usepackage{array,ragged2e}
+\usepackage{float}
+\def\HS{\rule[2cm]{0pt}{0cm}}
+\usepackage{lineno}
+\linenumbers
+\setlength{\tabcolsep}{2pt}
+\usepackage{multirow}
+
+\begin{document}
+\maketitle
+
+\begin{tabular}{l}
+$*$ Joint first author \\[-0.25cm]
+$^1$ Department of Human Genetics, Emory University, Atlanta, GA \\[-0.25cm]
+$^2$ Department of Biostatistics and Bioinformatics, Emory University, Atlanta, GA \\[-0.25cm]
+$^3$ Department of Biostatistics and Informatics, University of Colorado, Aurora, CO
+\end{tabular}
+
+\pagebreak
+
+\textbf{Short title:} Family History in Case-Control Studies
+
+\textbf{Key words:} rare variant, gene mapping, complex human traits
+
+\begin{tabular}{l}
+Address for correspondence:\\[-0.25cm]
+Dr. Michael Epstein\\[-0.25cm]
+Department of Human Genetics\\[-0.25cm]
+Emory University School of Medicine,\\[-0.25cm]
+Atlanta, GA, 30030\\[-0.25cm]
+Email: mpepste@emory.edu\\[-0.25cm]
+Phone: (404) 712-8289
+\end{tabular}
+
+\pagebreak
+
+\begin{center}
+\textbf{Abstract} 
+\end{center}
+
+Standard methods for case-control association studies of rare variation often treat disease outcome as a dichotomous
+phenotype. However, both theoretical and experimental studies have
+demonstrated that subjects with a family history of disease can be
+enriched for risk variation relative to subjects without such history.
+Assuming family history information is available, this observation
+motivates the idea of replacing the standard dichotomous outcome
+variable used in case-control studies with a more informative ordinal outcome
+variable that distinguishes controls (\(0\)), sporadic cases (\(1\)), and cases with a family history (\(2\)), with the expectation that we should observe increasing number of risk variants with increasing category of the ordinal variable. To leverage this expectation, we propose a novel rare-variant association test that incorporates family history information based on our previous GAMuT framework \citep{Broadaway2016} for rare-variant association testing of multivariate phenotypes. We use simulated data to show that, when family history information is available, our new method outperforms standard rare-variant association methods like burden and SKAT tests that ignore family history. We further illustrate our method using a rare-variant study of cleft lip and palate.
+
+\pagebreak
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+Sequencing and exome-chip technologies facilitate the discovery of rare genetic variation influencing complex diseases. Many rare-variant association studies of complex diseases now exist with most studies employing traditional case-control sampling designs for analysis \citep{DeRubeis2014, Sanders2017}. Under such a design, studies typically test whether patterns of rare variation within a gene or region of interest differ between affected and unaffected subjects using either burden \citep{Li2008, Madsen2009} or variance-component \citep{Wu2011} approaches based on an underlying logistic-regression framework that treats disease status as a simple dichotomous outcome variable. While such an analysis strategy is commonplace, there may exist helpful secondary information collected by the study that can facilitate the creation of a modified outcome variable that is more refined than the coarse dichotomous outcome typically considered. Use of this refined outcome variable within the study can reduce heterogeneity and potentially lead to more powerful analyses.
+
+One valuable source of secondary information often collected in a case-control study (but rarely utilized) is whether a sample participant reports a family history of the disease under study. Several papers have noted that a sample of cases reporting affected relatives are more enriched for a causal variant than cases without such family history \citep{TengRisch1999, Zollner2012, Epstein2015} since families with multiple affected individuals tend to segregrate more risk variants.
+Likewise, \citet{Liu2017} noted that unaffected subjects with a family history of disease (denoted `proxy cases') should have elevated frequency of a causal variant compared to controls with no family history. These observations motivate replacement of the standard dichotomous outcome variable for disease with a more refined variable that incorporates family-history information into the coding.
+
+In deciding how to refine the variable, we note that we should expect the frequency of a risk variant to follow a gradient that increases in frequency from controls with no family history to proxy cases to sporadic cases to cases with a family history. One way to exploit this phenomenon in genetic analysis is to recode the disease variable as a ordinal cateogorical variable with four possible levels: controls (\(0\)), proxy cases (\(1\)), sporadic cases (\(2\)), and cases with a family history (\(3\)). If proxy cases are unavailable, we instead consider a ordinal categorial variable with three possible levels: controls (\(0\)), sporadic cases (\(1\)), and cases with a family history (\(2\)). In either case, this recoding requires the development of novel methods for rare-variant analysis that can handle ordinal variables. To fill this gap, we propose a novel approach that is an extension of our previous GAMuT approach \citep{Broadaway2016}, which is a nonparametric association test using a kernel-distance covariance (KDC) framework that can handle multi-dimensional genotypes and phenotypes.
+Kernel-based approaches have found success in rare variant associations due to the natural incorporation of epistatic effects, and sparsity in the methodology.
+Here, we show how GAMuT can model ordinal outcomes in rare-variant analysis while correcting for confounding covariates such as population stratification. Furthermore, just like the standard GAMuT, the newly proposed ordinal GAMuT produces analytical p-values, which facilitates scaling to genome-wide analyses.
+
+The structure of this paper is as follows: after introducing the ordinal GAMuT method using the KDC framework
+\citep{Gretton2008, Szekely2007, Kosorok2009, Zhang2012, Hua2015}, we present simulation work to
+show that leveraging family history information via
+ordinal categorical variables can improve power in
+rare-variant association tests compared to standard dichotomous
+modeling of disease phenotypes that ignore such information, like the burden test \citep{Li2008, Madsen2009} and Sequence Kernel Association Test (SKAT) \citep{Wu2011}.
+Finally, we apply ordinal GAMuT to rare and less-common variant data from a genome-wide study of craniofacial defects
+\citep{Leslie2016, Leslie2016b, Mostowska2018}.
+
+\hypertarget{materials-and-methods}{%
+\section{Materials and Methods}\label{materials-and-methods}}
+
+\hypertarget{leveraging-family-information-through-ordinal-phenotype}{%
+\subsection{Leveraging Family Information through Ordinal Phenotype}\label{leveraging-family-information-through-ordinal-phenotype}}
+
+We assume a sample of \(N\) subjects that are genotyped for \(V\) rare variants
+in a target gene or region, so that \(G_j = (G_{j,1}, G_{j,2},\dots, G_{j,V})\)
+represents the genotypes of subject \(j\) at \(V\) rare-variant sites in the gene of interest.
+Note that \(G_{j,v}\) represents the number of copies of the minor allele that
+the subject possesses at the \(v^{th}\) variant. Thus, the matrix of rare-variant
+genotypes for the sample is denoted \(\mathbf{G} \in \mathbb{R}^{N \times V}\).
+
+Let \(\mathbf{Q}\) be an \(N\)-dimensional vector with binary disease status for \(N\) subjects. That is, \(Q_j=0\) if subject \(j\) is a control,
+and \(Q_j=1\) if subject \(j\) is a case.
+When family history
+information is available,
+we can instead employ a more informative
+ordinal phenotype. Assuming family history information is only available on cases, we can define the ordinal score as \(\tilde{Q}_j\) = \(0\)
+if the subject is a control, \(\tilde{Q}_j =1\) if the subject is a case
+without family history of the disease, and \(\tilde{Q}_j =2\) if the subject
+is a case with family history of the disease. If family history information is available for unaffected subjects, we can modify appropriately by extending the ordinal variable to the case of four categories: controls (\(\tilde{Q}_j=0\)), proxy cases (\(\tilde{Q}_j=1\)), and cases
+without (\(\tilde{Q}_j=2\)) and with family history (\(\tilde{Q}_j=3\)). The resulting phenotype vector \(\tilde{Q}\) is an \(N\)-dimensional ordinal vector with disease binary
+status adjusted for family history for the \(N\) subjects.
+
+\hypertarget{adjusting-for-covariates}{%
+\subsection{Adjusting for Covariates}\label{adjusting-for-covariates}}
+
+After transforming the binary phenotype to ordinal phenotype by incorporating
+the family history information, we can account for other covariates by regressing the phenotypes \(\tilde{Q}_j\) on covariates \(X_j\)
+with a
+cumulative-logit regression model, and use the residuals in our subsequent rare-variant association test. To illustrate the cumulative-logit regression model, let \(\tilde{Q}_j\) be an ordinal response with \(M\) categories, and let \(P(\tilde{Q}_j \leq k)\) be
+the cumulative probabilities for \(k=1, \dots, M\).
+The proportional odds model \citep{McCullagh1989} is a subclass of cumulative-logit regression models and it is defined as
+\[
+\logit P(\tilde{Q}_j \leq k | \mathbf{X_j}) = \theta_k - \mathbf{\beta}^T\mathbf{X_j} 
+\]
+for \(k=1,\dots,M-1\). Note that the negative sign is a convention to guarantee
+that large values of \(\mathbf{\beta}^T\mathbf{X_j}\) increase the probability in the
+larger values of \(k\). In addition, the vector of intercepts
+\(\theta = (\theta_1,\dots,\theta_{M-1})\) should satisfy
+\(\theta_1 \leq \theta_2 \leq \dots \leq \theta_{M-1}\).
+
+This model is denoted proportional odds because the ratio of the
+odds of \(P(\tilde{Q}_j \leq k|\mathbf{X_j})\) and \(P(\tilde{Q}_{j'} \leq k|\mathbf{X_{j'}})\) do not
+depend on the specific category \(k\).
+That is,
+\[
+\frac{P(\tilde{Q}_j \leq k | \mathbf{X_j})/(1-P(\tilde{Q}_j \leq k | \mathbf{X_j}))}{P(\tilde{Q}_{j'} \leq k | \mathbf{X_{j'}})/(1-P(\tilde{Q}_{j'} \leq k | \mathbf{X_{j'}}))} = \exp(-\mathbf{\beta}^T(\mathbf{X_j}-\mathbf{X_{j'}}))
+\]
+This is also denoted a \textit{parallelism assumption} on \(\mathbf{\beta}\) \citep{Yee2010}.
+
+Note that for an ordinal response with \(M\) categories, we fit \(M-1\) logit regression models. Thus, in our particular setting, we have three categories: controls (\(k=0\)), cases without family history (\(k=1\)) and cases with family history (\(k=2\)), and thus, we will fit 2 models: \(\logit P(\tilde{Q}_j \leq 0)\) and \(\logit P(\tilde{Q}_j \leq 1)\).
+With these models, we estimate the multinomial response probabilities for each individual. That is, for individual \(j\), we have:
+\[
+\mu_{j,0} = P(\tilde{Q}_j=0),
+\mu_{j,1} = P(\tilde{Q}_j=1),
+\mu_{j,2} = P(\tilde{Q}_j=2)
+\]
+Thus, the matrix of fitted values (denoted \(\mathbf{M}\)) will be a \(N \times 3\) matrix where each row sums to 1, and the \(i^{th}\) row corresponds to the estimated multinomial probabilities for individual \(i\): \((\hat{\mu}_{j,0},\hat{\mu}_{j,1},\hat{\mu}_{j,2})\).
+To obtain the matrix of residuals, we first transform the ordinal response into a \(N \times 3\) binary matrix (denoted \(\mathbf{I}_{\tilde{Q}}\)) where the \(i^{th}\) row corresponds to the 3-dimensional vector for individual \(i\) with three indicator functions, one for each category: \((I(\tilde{Q}_j=0), I(\tilde{Q}_j=1), I(\tilde{Q}_j=2))\). For example, if \(\tilde{Q}_j=2\), then the binary vector in the \(j^{th}\) row would be \((0,0,1)\). As a result, the matrix of residuals \(\mathbf{R}\) will be the \(N \times 3\) matrix of the
+difference between the binary matrix and the matrix of estimated multinomial probabilities: \(\mathbf{I}_{\tilde{Q}}-\mathbf{M}\). This matrix of residuals will then be input into the GAMuT framework to enable rare-variant association testing. The GAMuT framework allows for correlated phenotypes, and will be described in the following section.
+
+\hypertarget{gamut-test-of-cross-phenotype-associations}{%
+\subsection{GAMuT Test of Cross-Phenotype Associations}\label{gamut-test-of-cross-phenotype-associations}}
+
+GAMuT tests for independence between the phenotype matrix \(\mathbf{R}=\mathbf{I}_{\tilde{Q}}-\mathbf{M}\) (the \(N \times 3\) matrix of phenotype residuals) and \(\mathbf{G}\) (the \(N \times V\) matrix of multivariate
+rare-variant genotypes) by constructing an \(N \times N\) phenotypic-similarity
+matrix \(\mathbf{Y}\), and an \(N \times N\) genotypic-similarity matrix \(\mathbf{X}\).
+These similarity matrices depend on a user-selected kernel function \citep{Kwee2008, Schaid2010, Wu2010, Wu2011}. For example, the matrix \(\mathbf{Y}\) can be modeled with the projection matrix: \(\mathbf{Y} = \mathbf{R} (\mathbf{R}^T\mathbf{R})^{-1}\mathbf{R}^T\). Alternatively, if \(\gamma(\mathbf{R}_i,\mathbf{R}_j)\) denotes the kernel function between subjects \(i\) and \(j\), the linear kernel is defined as \(\gamma(\mathbf{R}_i,\mathbf{R}_j)= \sum_{l=1}^L R_{i,l} R_{j,l}\), which corresponds to the \((i,j)\) entry in \(\mathbf{Y}\): \(Y_{ij}\).
+See \citet{Broadaway2016} for more details on other kernel functions to model pairwise similarity or dissimilarity.
+
+After constructing the similarity matrices \(\mathbf{Y}\) and \(\mathbf{X}\),
+we center them as \(\mathbf{Y}_c = \mathbf{HYH}\) and \(\mathbf{X}_c = \mathbf{HXH}\),
+where \(\mathbf{H}=(\mathbf{I}-\mathbf{11}^T/N)\) is a centering matrix
+(\(\mathbf{HH} = \mathbf{H}\)), \(\mathbf{I} \in \mathbb{R}^{N \times N}\) is an
+identity matrix, and \(\mathbf{1} \in \mathbb{R}^{N \times 1}\) is a vector of ones.
+With the centered similarity matrices (\(\mathbf{Y}_c, \mathbf{X}_c\)), we construct
+the GAMuT test statistic as
+
+\[
+T_{GAMuT}=\frac{1}{N}\trace(\mathbf{Y}_c\mathbf{X}_c).
+\]
+Under the null hypothesis where the two matrices are independent,
+\(T_{GAMuT}\) follows the asymptotic distribution as the weighted
+sum of independent and identically distributed \(\chi^2_{(1)}\) variables \citep{Broadaway2016}.
+We then use Davies' method \citep{Davies1980} to analytically calculate the p-value of \(T_{GAMuT}\).
+
+\hypertarget{simulations}{%
+\subsection{Simulations}\label{simulations}}
+
+We conducted simulations to show that ordinal GAMuT properly preserves the type I error
+and to assess the power of ordinal GAMuT relative to
+standard case-control burden \citep{Li2008, Madsen2009} and SKAT \citep{Wu2011} tests that do not account for family history information.
+
+For the genetic data, we simulated trios (parents and offspring) with 10,000 haplotypes of 10 kb in size using COSI \citep{cosi},
+a coalescent model that accounts for linkage disequilibrium (LD) pattern, local recombination rate, and population
+history for individuals of European descent. We defined rare variants as those with \(MAF \leq 3\%\).
+For the power simulations, we assumed the proportion of causal variants to be \(15\%\),
+with effect size for each causal variant given by \(\frac{\log(C)}{4}|\log_{10}(MAF)|\) plus a Normal noise with mean \(0\) and variance \(0.1\). We varied \(C=4,6\). This setup defines the
+effect size of any given causal variant as inversely proportional to its MAF, which implies
+that very rare variants will have a larger effect size.
+
+For the ordinal phenotype, the proband's probability of disease depended on the sequence
+data and the disease prevalence, which we varied as \(0.01\), or \(0.05\), while the family
+members' probability of disease depended on the sequence data and the conditional
+recurrence risk ratio (\(\lambda=2,4,8\)) \citep{Epstein2015}. If the proband was unaffected,
+we defined the person as a control. If the proband was affected and none of the parents were affected, we defined the person
+as a case without family history. Finally, if the proband was affected and at least of the parents was affected, we defined the person as a case with family history.
+
+For each simulated dataset, we generated an equal number of controls, cases without family history, and cases with family history. We varied this number among \(N=400, 750, 1000, 1500\).
+For each simulated dataset, we applied our ordinal GAMuT method that modeled cases with and without family history separately. We also applied standard burden and SKAT tests that combined all cases together without regards to family history information. For each method, we weighted rare variants using the weighting scheme recommended by \citet{Wu2011}; \(w_v=Beta(MAF_v,1,25)/Beta(0,1,25)\).
+
+We used the R package \texttt{VGAM} and function \texttt{vglm} to fit the
+cumulative-logit regression model with proportional-odds assumption \citep{Yee2010}, and use the resulting residuals to construct the phenotypic similarity matrix input in the GAMuT package \citep{Broadaway2016}.
+
+\hypertarget{analysis-of-pittsburgh-orofacial-cleft-multiethnic-gwas}{%
+\subsection{Analysis of Pittsburgh Orofacial Cleft Multiethnic GWAS}\label{analysis-of-pittsburgh-orofacial-cleft-multiethnic-gwas}}
+
+Orofacial clefts (OFCs) such as cleft lip (CL), cleft palate (CP), and cleft lip with cleft palate (CLP)
+are among the most common birth defects in humans with prevalence between 1 in 500 and
+1 in 2,500 live births \citep{Tessier1976, Mossey2009}. Extensive recent studies
+identified common nucleotide variants associated with orofacial clefts, such as 1p22.1, 2p24.2, 3q29, 8q24.21, 10q25.3, 12q12, 16p13.3, 17q22, 17q23, 19q13, and 20q12 \citep{Birnbaum2009, Grant2009, Beaty2010, Mangold2009, Wolf2015, Leslie2016, Leslie2016b, Mostowska2018}.
+However, the role of rare genetic variation in OFCs is still underway.
+
+The Pittsburgh Orofacial Cleft Multiethnic GWAS \citep{Leslie2016, Leslie2016b} seeks to identify genetic variants that are associated with the risk of OFCs. This dataset includes a multi-ethnic cohort with 11,727 participants from 13 countries from North, Central or South America. Asia, Europe and Africa. Most of the participants were recruited as part of genetic and phenotyping studies coordinated by the University of Pittsburgh Center for Craniofacial and Dental Genetics and the University of Iowa. The study cohort includes OFC-affected probands with their family members, and controls without history of OFC. Affection status consists of cleft lip (CL) with or without palate (CL/P).
+
+We performed standard data cleaning and quality control (see \citet{Leslie2016}). We analyzed only Caucasian participants, and we kept rare variants with MAF in \((0.001,0.05)\) and genotype call rate greater than \(95\%\).
+
+The final sample consisted of 1411 individuals, among which there were 835 controls, 309 cases without family history and 267 cases with family history. We did not include any covariates except for 5 principal components of ancestry (see \citet{Leslie2016} for the details on the Principal Components Analysis).
+We applied ordinal GAMuT using linear kernel to measure pairwise phenotypic similarity.
+We also ran SKAT and burden tests, with the typical weights defined in \citet{Wu2011}. For GAMuT, we used a weighted linear kernel (with the weighting scheme in \citet{Wu2011}) to measure pairwise genotypic similarity.
+
+\textbf{Data availability statement } The URLs for software: \url{https://github.com/crsl4/ordinal-gamut} and \url{http://www.genetics.emory.edu/labs/epstein/software}. The dataset title and accession number for dbGaP are ``Center for Craniofacial and Dental Genetics (CCDG): Genetics of Orofacial Clefts and Related Phenotypes'', ``dbGaP Study Accession: phs000774.v2.p1''.
+
+\hypertarget{results}{%
+\section{Results}\label{results}}
+
+\hypertarget{type-i-error-simulations}{%
+\subsection{Type I Error Simulations}\label{type-i-error-simulations}}
+
+Figure \ref{fig:qq} shows the quantile-quantile (QQ) plots of 10,000 null simulations with different subjects per group, target disease prevalence, and \(\lambda\) values. We show the comparison with ordinal GAMuT, SKAT and burden test. All methods compared properly control the type I error. Empirical type I error rates for different significance levels are provided in Supplemental Table \ref{table1}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.8\linewidth]{figures/scenario1} \includegraphics[width=0.8\linewidth]{figures/scenario3-2} \includegraphics[width=0.8\linewidth]{figures/scenario5} \includegraphics[width=0.8\linewidth]{figures/scenario7} 
+
+}
+
+\caption{Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test, SKAT, and the ordinal GAMuT here proposed. Simulated datasets (10,000) assumed a 10kb region and rare variants defined as those with MAF <3\%. \textbf{Panel A:} 750 subjects per group,  disease prevalence of 0.01 and $\lambda=2$. \textbf{Panel B:} 750 subjects per group, disease prevalence of 0.05 and $\lambda=2$. \textbf{Panel C:} 750 subjects per group, disease prevalence of 0.01 and $\lambda=4$. \textbf{Panel D:} 750 subjects per group, disease prevalence of 0.05 and $\lambda=4$.}\label{fig:qq}
+\end{figure}
+
+\hypertarget{power-simulations}{%
+\subsection{Power Simulations}\label{power-simulations}}
+
+Now, we compare the power of ordinal GAMuT with SKAT and burden test (Figure \ref{fig:power-plot}). The power was estimated by computing the proportion of p-values less than the significance level (\(\alpha=5 \times 10^{-5}\) for effect sizes of 4 and 6) out of 1000 replicates per scenario and model.
+For these power simulations, we use different effect sizes in figures (\(C=4,6\)). Columns refer to the conditional recurrence risk ratio \(\lambda=2,4,8\), and rows refer to disease prevalences \(0.01,0.05\) . We compare the empirical power for sample sizes of \(N=400,750,1000,1500\) subjects per group. First, we note that we observe an increased number of causal variants in cases with family history compared to controls (see Supplemental Figure \ref{fig:causalvar}). Our method (ordinal GAMuT) outperformed the burden test \citep{Li2008, Madsen2009} and SKAT \citep{Wu2011}, with power increasing as sample size, recurrence risk, and effect size increased.
+Our method is more powerful given that other methods merge two clearly distinct groups: cases with and without family history, and thus, they cannot exploit the information present in the enrichment of causal variants in the cases with family history. Our ordinal approach models reality better by explicitly separating these two groups that have distinct genetic characteristics.
+
+Based on our initial power simulations, we performed additional simulations assuming different genetic architecture and region length to examine if ordinal GAMuT continues to outperform standard methods in other settings. We first conducted additional simulations where only a few rare causal variants of large effect influenced disease. For these simulations, we selected only 4 causal variants per region with MAF between 0.01 and 0.001 and let \(C=12\) at a target disease prevalence of 5\%. As shown in Supplemental Figure \ref{fig6}, ordinal GAMuT continued to outperform SKAT and burden testing within this setting. Next, we performed power simulations similar to our original settings but this time increasing the region length from 10kb to 50kb. We show the results in Supplemental Figure \ref{fig7}. While the power of all 3 methods increased with increasing region size, ordinal GAMuT again provided the most powerful test. Finally, we performed additional power simulations decreasing the disease prevalence to 0.001 and again found ordinal GAMuT to be most powerful in this setting (Supplemental Figure \ref{fig8}).
+
+\begin{figure}
+
+{\centering \includegraphics{ordinal-gamut_MPE_files/figure-latex/power-plot-1} 
+
+}
+
+\caption{Power for gene-based testing comparing three methods: burden test (blue, square), SKAT (green, triangle) and ordinal GAMuT (red, circle). We compared two disease prevalences 0.01, 0.05 (rows), different conditional recurrence risk ratio $\lambda=2,4,8$ (columns).}\label{fig:power-plot}
+\end{figure}
+
+\hypertarget{analysis-of-pittsburgh-orofacial-cleft-multiethnic-gwas-1}{%
+\subsection{Analysis of Pittsburgh Orofacial Cleft Multiethnic GWAS}\label{analysis-of-pittsburgh-orofacial-cleft-multiethnic-gwas-1}}
+
+We applied our method to a Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS \citep{Leslie2016}, \citep{Leslie2016b} with 1,411 Caucasian subjects (267 cases with family history of clefting (up to third degree relatives), 309 cases without family history and 835 controls) and 61,671 variants used for annotation with Bystro \citep{Kotlar2018}.
+We filtered rare variants with MAF \([0.001,0.05]\), and filtered genes to having minimum 4 rare variants, which resulted in 5,137 gene tests.
+We tested the association between the 5,137 genes and CL or CL/P status, adjusting for principal components for population structure. We compared our results (ordinal GAMuT) with the burden test and SKAT approach.
+Neither of the methods show any p-value inflation (Fig. \ref{fig:cleft-qq}).
+
+None of the methods identified any genes significantly associated with CL/P. However, ordinal GAMuT
+identified one gene (GRHL2) on chromosome 8 that passes the suggestive significance threshold (Fig. \ref{fig:cleft-manhattan}). GRHL2 is in the same gene family as GRHL3, which is a transcription factor that causes syndromic forms of clefting and is associated with nonsyndromic clefting in other GWAS \citep{Leslie2016, Leslie2016b, Carpinelli2017, PeyrardJanvid2014}. We note that we repeated our analysis using a more restricted MAF filter of \([0.001,0.03]\) to be more consistent with our simulation design. Under this more restricted filter, the ordinal GAMuT p-value for GRHL2 increased slighlty to 0.0004.
+
+\begin{figure}
+\centering
+\includegraphics{ordinal-gamut_MPE_files/figure-latex/cleft-qq-1.pdf}
+\caption{\label{fig:cleft-qq}Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test \citep{Li2008, Madsen2009}, SKAT \citep{Wu2011} and the ordinal GAMuT here proposed in the GWAS of Pittsburgh Orofacial Cleft Multiethnic.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{ordinal-gamut_MPE_files/figure-latex/cleft-manhattan-1.pdf}
+\caption{\label{fig:cleft-manhattan}Gene-based test on Pittsburgh Orofacial Cleft (POFC) Multiethnic GWAS using burden, SKAT and ordinal GAMuT approach. Manhattan plots for each of the three tests. Red line: genome-wide significance level (\(-\log_{10}(0.05/5137) = 5.0117\)). Blue line: suggestive level (\(-\log_{10}(1 \times 10 ^{-4}) = 4\)).}
+\end{figure}
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+Standard GWAS methods for case-control studies usually define a disease outcome as a dichotomous phenotype. This phenotype ignores family history of disease, even if this information is available in the dataset at hand. Given that cases with a family history of disease can be enriched for risk variation relative to sporadic cases and may represent a source of case heterogeneity, incorporating family history is expected to increase power to detect genetic variants associated with disease. We introduce an extension to the GAMuT method \citep{Broadaway2016} to incorporate family information to enhance case-control association studies. This approach converts the usual binary phenotype of case-control status into an ordinal phenotype with three levels: cases with family history, cases without family history and controls, and it allows adjustment for covariates. Using both simulated and real data, we show that incorporating family history within our GAMuT framework improved power compared to standard burden and SKAT tests that ignore such information. While our work focused exclusively on the study of rare variation, we would anticipate similar power trends if we were to consider association of multiple common variants within a gene based on the work of \citet{TengRisch1999}. We will explore this idea in a future manuscript.
+
+Even though we do not include proxy cases (unaffected subjects with a family history) in our analyses, this ordinal approach can easily be extended to the case of four categories: controls, proxy cases, cases without family history, and cases with family history by considering an ordinal phenotype with 4 levels. It is common practice to exclude proxy cases because it is believed that the inclusion of such unaffected subjects would reduce the power of a standard case-control approach, and also, there are not many software alternatives that can leverage information from such subjects. Our ordinal methodology will allow for an easy inclusion of proxy cases. Another study design that we may consider in future work is to expand ordinal GAMuT to consider hybrid designs consisting of affected pedigrees as well as unrelated cases and controls. Under this setting, we can pursue an analysis strategy that potentially combines linkage and association information together within a joint analysis framework using methodology similar to that implemented in Pedigree VAAST (pVAAST)\citep{Hu2014}. Unlike the existing pVAAST framework, our ordinal GAMuT extensions would distinguish cases with a family history from sporadic cases in the association component of the analysis framework, potentially improving performance.
+
+Analogous to the standard GAMuT test, the ordinal GAMuT obtains analytic p-values from Davies' method \citep{Davies1980} which permits genomewide analysis as illustrated in our analysis of orofacial clefting. We performed additional simulations to provide run-time benchmarks of our GAMuT method against SKAT. Assuming a target disease prevalence of 0.05 and conditional recurrence risk ratio of 8, we estimated the average run-times varying both sample size per group and length of region and summarize findings in Supplemental Table \ref{table2}. As expected, the average run-time increases with sample size and region size for both methods. At smaller sample sizes and smaller genotypic regions, the computational advantage of SKAT is minimal. However, as sample size increases, we observe that ordinal GAMuT can take 3 to 6 times as long to run as SKAT (due to the former method requiring more matrix multiplication and eigenvalue decomposition due to the presence of the phenotypic kernel matrix). While ordinal GAMuT is slower to run than SKAT, the former can still scale to genomewide analyses. In the Broadaway et al. (2016; AJHG) paper, we showed that average run times for sample sizes of 5K, 10K, 20K, and 30K of a 10kb region were 13.2 seconds, 68.6 seconds, 580 seconds, and 3600 seconds, respectively, using a R script running single-threaded on a laptop with 1.7 GHz Intel Core i7 processor and 8 GB 1600 MHz DDR3 memory.
+
+As presented, ordinal GAMuT uses a proportional-odds model under a parellelism assumption to derive the matrix of fitted values \(\mathbf{M}\), which is then used to calculate the matrix of residuals \(\mathbf{R}\). The proportional-odds assumption is not a crucial component of the GAMuT formulation and was chosen for simplicity. In practice, one can apply any regression model for multi-categorical data to derive \(\mathbf{M}\). In practice, one can test the proportional odds assumption or use model-selection criteria like Akaike Information Criterion (AIC) or Bayesian Information Criterion (BIC) to select the most appropriate model. We note that the R package \texttt{VGAM} used to fit ordinal regression models contains functions \texttt{AICvlm} and \texttt{BICvlm} that produce AIC and BIC, respectively, to assist with model selection. Also, while the rows of \(\mathbf{M}\) and \(\mathbf{R}\) are constrained to induce co-linearity, we note that we don't need to replace these \(N \times 3\) matrices with \(N \times 2\) matrices since the derivation of the ordinal GAMuT p-value will depend on the matrix eigenvalues and the collinearity will result in one of the eigenvalues being 0 (thus, naturally accounting for the constraint).
+
+Simulation studies of rare variant sets showed that our ordinal GAMuT method is more powerful compared to usual gene-based tests like burden test \citep{Li2008, Madsen2009} and SKAT \citep{Wu2011}, possibly due to the fact that subjects with family history are more enriched for rare causal variants. Applying our method to Pittsburgh Orofacial Cleft Multiethnic GWAS \citep{Leslie2016, Leslie2016b}, we identified a gene (GRHL2) (not previously reported) to suggestively associate with cleft lip and palate phenotypes. GRHL2 is in the same gene family as GRHL3, which is a transcription factor that causes in syndromic forms of clefting and was found to be associated with nonsyndromic clefting in GWAS \citep{Leslie2016, Leslie2016b, Carpinelli2017, PeyrardJanvid2014}.Burden and SKAT on these same phenotypes (figure \ref{fig:cleft-manhattan}) failed to identify any significant or suggestive genes. Among the weaknesses of the proposed method, extra care should be taken if there is a small cell count of cases with family history in the dataset, or in highly unbalanced dataset in which one of the categories is highly dominant in frequency compared to the other categories.
+
+\textbf{Acknowledgements:} Data for the Orofacial Cleft Multiethnic GWAS comes from samples provided by Kaare Christensen (University of Southern Denmark), Frederic W.B. Deleyiannis (University of Colorado School of Medicine, Denver), Jacqueline T. Hecht (McGovern Medical School and School of Dentistry UT Health at Houston), George L. Wehby (University of Iowa), Seth M. Weinberg (University of Pittsburgh), Jeffrey C. Murray (University of Iowa) and Mary L. Marazita (University of Pittsburgh).
+This work was supported by NIH grants GM117946 {[}MP,DG{]}, HG007508 {[}MP{]}, R00-DE025060 {[}EJL{]}, X01-HG007485 {[}MLM{]}, R01-DE016148 {[}MLM, SMW{]}, U01-DE024425 {[}MLM{]}, R37-DE008559 {[}JCM, MLM{]}, R21-DE016930 {[}MLM{]}, R01-DE012472 {[}MLM{]}, R01-DE011931 {[}JTH{]}, R01-DE011948 {[}KC{]}, U01-DD000295 {[}GLW{]}; NIH contract to the Johns Hopkins Center for Inherited Disease Research: HHSN268201200008I.
+
+\newpage
+
+\hypertarget{supplementary-material}{%
+\section*{Supplementary Material}\label{supplementary-material}}
+\addcontentsline{toc}{section}{Supplementary Material}
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{Empirical type I error rates for burden, SKAT, and ordinal GAMuT methods from 10,000 null simulations assuming 750 subjects per group, a 10kb region, and rare variants defined as those with $MAF<3\%$.}
+\vspace{0.25cm}
+\begin{tabular}{c|c|ccc|ccc|ccc|ccc}
+& & & $\alpha=0.1$ & & & $\alpha=0.05$ & & & $\alpha=0.01$ & & & $\alpha=0.001$ & \\
+$\lambda$ & Prevalence & Burden & SKAT & GAMuT & Burden & SKAT & GAMuT & Burden & SKAT & GAMuT & Burden & SKAT & GAMuT \\
+\hline
+\multirow{2}{*}{2} & 0.01 & 0.1011 & 0.1126 & 0.1079 & 0.0500 & 0.0575 & 0.0556 & 0.0103 & 0.0134 & 0.0130 & 0.0006 & 0.0020 & 0.0015 \\
+& 0.05 & 0.1084 & 0.1014 & 0.1089 & 0.0534 & 0.0530 & 0.0581 & 0.0107 & 0.0111 & 0.0111 & 0.0009 & 0.0017 & 0.0015 \\
+\hline
+\multirow{2}{*}{4} & 0.01 & 0.1038 & 0.1161 & 0.1078 & 0.0510 & 0.0615 & 0.0568 & 0.0109 & 0.0136 & 0.0135 & 0.0008 & 0.0017 & 0.0014 \\
+& 0.05 & 0.1061 & 0.1092 & 0.1083 & 0.0553 & 0.0536 & 0.0542 & 0.0115 & 0.0119 & 0.0100 & 0.0012 & 0.0015 & 0.0015
+\end{tabular}
+\label{table1}
+\vspace{0.2cm}
+Abbreviations: $\lambda$, conditional recurrence risk ratio; $\alpha$, significance threshold; MAF, minor allele frequency
+\end{table}
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{Average computing time for one test from 1,000 null simulations assuming $\lambda = 8$ and target disease prevalence 0.05.}
+\vspace{0.25cm}
+\begin{tabular}{c|c|c|c}
+Region Size (kb) & Sample Size (Per Group) & Ordinal GAMuT Time (sec, mean [SD]) & SKAT Time (sec, mean [SD]) \\
+\hline
+\multirow{4}{*}{10} & 750 & 0.40 (0.08) & 0.10 (0.02)\\
+& 1000 & 0.56 (0.13) & 0.15 (0.03) \\
+& 1500 & 1.12 (0.32) & 0.28 (0.05) \\
+& 2500 & 3.15 (0.8) & 0.52 (0.08)\\
+\hline
+\multirow{4}{*}{50} & 750 & 1.30 (0.22) & 0.59 (0.1) \\
+& 1000 & 2.23 (0.41) & 0.90 (0.16) \\
+& 1500 & 5.10 (0.96) & 1.83 (0.37) \\
+& 2500 & 13.27 (2.64) & 3.51 (0.59)\\
+\end{tabular}
+\label{table2}
+
+\vspace{0.2cm}
+Abbreviations: $\lambda$, conditional recurrence risk ratio
+\end{table}
+
+\hypertarget{enrichment-of-causal-variants}{%
+\subsection*{Enrichment of Causal Variants}\label{enrichment-of-causal-variants}}
+\addcontentsline{toc}{subsection}{Enrichment of Causal Variants}
+
+In Figure \ref{fig:causalvar}, we show that, as expected, the average number of causal rare variants is greater for the cases with family history, followed by cases without family history, and lastly for controls. This simulated dataset comprises of 1000 controls, 1000 cases without family history, and 1000 cases with family history for three levels of conditional recurrence risk ratios (columns: \(\lambda=2,4,8\)) and 2 siblings as family history. The effect size was set as \(C=2\).
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=0.75\linewidth]{ordinal-gamut_MPE_files/figure-latex/causalvar-1} 
+
+}
+
+\caption{Average of 1000 simulations of number of causal rare variants (left) and probability of disease (right) in proband for three groups: controls, cases without family history, and cases with family history under two disease prevalences (red=0.01, blue=0.05), with one (top) or two (bottom) siblings, and three conditional recurrence risk ratios as columns.}\label{fig:causalvar}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/power_4_per_region_color.png}
+\caption{Power across 1000 simulations in which there were 4 causal rare variants per region with MAF between 0.01 and 0.001 with a large effect size ($C=12$) at a target disease prevalence of 5\%.}
+\label{fig6}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/power_50kb_region_color.png}
+\caption{Power across 1000 simulations using a 50kb region, effect size C=4, and a target disease prevalence of 0.05.}
+\label{fig7}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/power_reduced_prevalence_color.png}
+\caption{Power across 1000 simulations at a reduced target disease prevalence of 0.001 with causal rare variants of moderate effect size ($C=4,6)$ and $\lambda=4,8$ assuming 750 subjects per group.}
+\label{fig8}
+\end{figure}
+
+\clearpage
+
+\bibliography{ordinal-gamut.bib}
+
+
+\end{document}
