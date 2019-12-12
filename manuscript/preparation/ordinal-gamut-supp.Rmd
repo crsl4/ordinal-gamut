@@ -1,4 +1,0 @@
-
-```{r supp-qq, out.width='80%', fig.cap='Q-Q plots of p-values for gene-based tests of rare variants for three methods: burden test, SKAT, and the ordinal GAMuT here proposed. Simulated datasets (100,000) assumed a 10kb region and rare variants defined as those with MAF <3\\%. \\textbf{Top:} 750 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Middle:} 1000 subjects per group, disease prevalence of 0.05 and $\\lambda=2$. \\textbf{Bottom:} 750 subjects per group, disease prevalence of 0.01 and $\\lambda=4$.',fig.show='hold', fig.align='center'}
-knitr::include_graphics(c('figures/scenario3.png','figures/scenario4.png','figures/scenario5.png'))
-```
